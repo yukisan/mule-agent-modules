@@ -112,6 +112,7 @@ public class GraphiteMonitorPublisher extends BufferedHandler<List<Metric>>
                     out.flush();
 
                     in = new BufferedReader(new InputStreamReader(graphiteConnection.getInputStream()));
+                    LOGGER.debug("Message sent to Graphite: " + message.toString());
 
                 }
             }

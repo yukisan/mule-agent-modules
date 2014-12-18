@@ -130,7 +130,7 @@ public class ZabbixMonitorPublisher extends BufferedHandler<List<Metric>>
                     out.flush();
 
                     in = new BufferedReader(new InputStreamReader(zabbixConnection.getInputStream()));
-                    LOGGER.info("Message sent to Zabbix: " + message.toString());
+                    LOGGER.debug("Message sent to Zabbix: " + message.toString());
 
                 }
             }
