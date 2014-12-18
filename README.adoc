@@ -4,9 +4,10 @@ Includes Mule Agent extensions. For more information about how extending Mule Ag
 
 = Monitoring Publishers
 
-== Adding your JMX Monitoring Publisher
+== How to Contribute with a New Publisher
 
-To add your own publisher please refer to link:http://mulesoft.github.io/mule-agent/#_adding_new_jmx_publisher[Agent documentation]
+Please take a look at the included publishers under *mule-agent-monitoring-publishers*. To add a new one please follow the instructions in link:http://mulesoft.github.io/mule-agent/#_adding_new_jmx_publisher[Agent documentation] about how to write your own
+module. We look forward for your pull requests!
 
 
 
