@@ -1,0 +1,48 @@
+= CloudWatch Publisher
+
+The CloudWatch publisher sends metrics to the CloudWatch account corresponding to
+the credentials set up in the configurable fields. The namespace used for the publisher
+should be unique to each Mule intance to avoid receiving metrics from different Mule
+instances only to have them grouped together.
+
+=== Configurable Fields
+
+|===
+|Field | Data Type |Description |Default Value
+
+|namespace
+|String
+|Represents the namespace for the metrics for this Mule instance as defined in CloudWatch.
+|"com.mulesoft.agent"
+
+|accessKey
+|String
+|Represents the CloudWatch access key.
+|"missingAccessKey"
+
+|secretKey
+|String
+|Represents the CloudWatch secret key.
+|"missingSecretKey"
+
+|===
+
+
+=== Configuration Example
+
+[source,yaml]
+.CloudWatch Configuration
+....
+---
+cloudwatch.agent.monitor.publisher:
+  namespace: com.mulesoft.agent
+  accessKey: missingAccessKey
+  secretKey: missingSecretKey
+....
+
+
+
+
+
+
+

@@ -1,0 +1,48 @@
+= Zabbix Publisher
+
+The Zabbix publisher supports version 2.0 of the Zabbix Sender protocol.
+To receive the metrics published by the Zabbix Publisher the source of the metrics
+must be configured in Zabbix as *zabbix_trapper*.
+
+=== Configurable Fields
+
+
+|===
+|Field | Data Type |Description |Default Value
+
+|host
+|String
+|Represents the host name for the Mule instance as defined in the Zabbix server.
+|"com.mulesoft.agent"
+
+|zabbixServer
+|String
+|Represents the location of the Zabbix server to which the metrics should be published.
+|"0.0.0.0"
+
+|zabbixPort
+|Integer
+|Represents the port on which the Zabbix server is listening.
+|10051
+
+|===
+
+=== Configuration Example
+
+[source,yaml]
+.Zabbix Configuration
+....
+---
+mule.agent.zabbix.jmx.internal.handler:
+  host: com.mulesoft.agent
+  zabbixServer: 54.166.172.53
+  zabbixPort: 10051
+....
+
+
+
+
+
+
+
+

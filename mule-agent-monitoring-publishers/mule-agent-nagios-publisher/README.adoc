@@ -1,0 +1,60 @@
+= Nagios Publisher
+
+The Nagios publisher works by sending passive checks to Nagios via the NSCA add-on.
+For the publisher to work the add-on must be installed and configured.
+
+=== Configurable Fields
+
+|===
+|Field | Data Type |Description |Default Value
+
+|host
+|String
+|Represents the host name for the Mule instance as defined in the Nagios server.
+|"com.mulesoft.agent"
+
+|nagiosServer
+|String
+|Represents the location of the Nagios server to which the metrics should be published.
+|"0.0.0.0"
+
+|nagiosPort
+|Integer
+|Represents the port on which the Nagios server is listening.
+|5667
+
+|encryptionMethod
+|String
+|Represents the encryption method to be used for transmiting the metrics via the NSCA protocol.
+|"XOR"
+
+|password
+|String
+|Represents the password the host if one is configured. This field is optional.
+|No default value
+
+|===
+
+
+*Default Value*: No default value
+
+=== Configuration Example
+
+[source,yaml]
+.Nagios Configuration
+....
+---
+mule.agent.nagios.jmx.internal.handler:
+  host: com.mulesoft.agent
+  nagiosServer: 54.166.172.53
+  nagiosPort: 5667
+  encryptionMethod: XOR
+  password myPassword
+....
+
+
+
+
+
+
+

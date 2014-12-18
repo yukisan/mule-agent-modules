@@ -1,0 +1,52 @@
+= Graphite Publisher
+
+The Graphite publisher works by sending metrics to the Graphite server. For the
+publisher to work correctly the data retention for the metrics to be pushed needs
+to be correctly set up in Graphite.
+
+=== Configurable Fields
+
+
+|===
+|Field | Data Type |Description |Default Value
+
+|metricPrefix
+|String
+|Represents the prefix configured in Graphite for the metrics coming from this Mule instance.
+This rules for accepting metrics with this prefix must be correctly configured in Graphite for the publisher to work correctly.
+|"mule"
+
+|graphiteServer
+|String
+|Represents the location of the Graphite's Carbon server to which the metrics should be published.
+|"0.0.0.0"
+
+|graphitePort
+|Integer
+|Represents the port on which Graphite's Carbon server is listening.
+|2003
+
+
+|===
+
+
+
+=== Configuration Example
+
+[source,yaml]
+.Graphite Configuration
+....
+---
+mule.agent.graphite.jmx.internal.handler:
+  metricPrefix: mule
+  graphiteServer: 54.166.172.53
+  graphitePort: 2003
+....
+
+
+
+
+
+
+
+
