@@ -1,0 +1,15 @@
+= Mule Agent Monitoring Publishers
+
+Mule Agent JMX Internal Handlers to provide metrics integration with monitoring systems.
+
+== Available Modules
+
+- Cloudwatch publishers: allows users to send JMX metrics to link:http://aws.amazon.com/cloudwatch/[Amazon Cloudwatch].
+
+- Graphite: provides link:http://graphite.wikidot.com/[Graphite] JMX metrics integration.
+
+- Nagios: provides integration with link:http://www.nagios.org/[Nagios].
+
+- Zabbix: module to send metrics to link:http://www.zabbix.com/[Zabbix] instances.
+
+For further information please check the JMX section in  link:http://mulesoft.github.io/mule-agent/#_jmx_service[Mule Agent documentation].
