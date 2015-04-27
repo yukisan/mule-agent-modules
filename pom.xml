@@ -16,6 +16,7 @@
     <modules>
         <module>mule-agent-monitoring-publishers</module>
         <module>mule-agent-eventtracking-internalhandlers</module>
+        <module>mule-agent-modules-common</module>
     </modules>
 
     <properties>

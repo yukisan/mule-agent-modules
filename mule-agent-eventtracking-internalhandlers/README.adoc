@@ -4,6 +4,8 @@ Mule Agent Event Tracking Internal Handlers to provide event tracking integratio
 
 == Available Modules
 
-- DB Internal Handler: allows users to store the Agent Notifications to any Database that has a JDBC driver.
+- DB Internal Handler: store the Event Tracking Notifications to any Database that has a JDBC driver.
+- Log Internal Handler: store the Event Tracking Notifications to a flat log file.
+- Splunk Internal Handler: send the Event Tracking Notifications to Splunk.
 
 For further information please check the Event Tracking section in  link:http://mulesoft.github.io/mule-agent/#_event_tracking[Mule Agent documentation].

@@ -1,7 +1,6 @@
 package com.mulesoft.agent.eventtracking.splunk;
 
 import com.mulesoft.agent.domain.tracking.AgentTrackingNotification;
-import com.mulesoft.agent.eventtracking.splunk.EventTrackingSplunkInternalHandler;
 import junit.framework.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -20,32 +19,39 @@ public class EventTrackingSplunkInternalHandlerTest
     public void test () throws IOException
     {
         EventTrackingSplunkInternalHandler handler = new EventTrackingSplunkInternalHandler();
+        handler.setEnabled(true);
         handler.user = System.getProperty("user");
         handler.pass = System.getProperty("pass");
         handler.host = System.getProperty("host");
         handler.port = Integer.parseInt(System.getProperty("port"));
         handler.scheme = System.getProperty("scheme");
+        handler.sslSecurityProtocol = System.getProperty("sslSecurityProtocol");
         handler.splunkIndexName = System.getProperty("splunkIndexName");
         handler.splunkSource = System.getProperty("splunkSource");
         handler.splunkSourceType = System.getProperty("splunkSourceType");
         handler.dateFormatPattern = System.getProperty("dateFormatPattern");
-        handler.eventTemplate = System.getProperty("eventTemplate");
+
         handler.postConfigurable();
 
-        boolean success = handler.flush(createNotifications());
+        boolean success = true;
+        for (AgentTrackingNotification notification : createNotifications())
+        {
+            success &= handler.handle(notification);
+        }
+
         Assert.assertTrue(success);
     }
 
     private List<AgentTrackingNotification> createNotifications ()
     {
         List<AgentTrackingNotification> list = new ArrayList<AgentTrackingNotification>();
-        for (int i = 0; i < 20000; i++)
+        for (int i = 0; i < 1000; i++)
         {
             list.add(new AgentTrackingNotification.TrackingNotificationBuilder()
-                    .action("TEST " + i)
+                    .action("TEST Reflection" + i)
                     .annotations(new ArrayList<Annotation>())
                     .timestamp(new Date().getTime())
-                    .application("SplunkTEST")
+                    .application("SplunkTEST-Reflection")
                     .build());
         }
         return list;
