@@ -1,7 +1,6 @@
 package com.mulesoft.agent.eventtracking.db;
 
 import com.mulesoft.agent.domain.tracking.AgentTrackingNotification;
-import com.mulesoft.agent.eventtracking.db.EventTrackingDBInternalHandler;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -18,19 +17,22 @@ public class EventTrackingDBInternalHandlerTest
     @Test
     public void test () throws SQLException, ClassNotFoundException
     {
-        EventTrackingDBInternalHandler agent = new EventTrackingDBInternalHandler();
-        agent.driver = System.getProperty("driver");
-        agent.jdbcUrl = System.getProperty("jdbcUrl");
-        agent.user = System.getProperty("user");
-        agent.pass = System.getProperty("pass");
-        agent.table = System.getProperty("table");
-        agent.postConfigurable();
+        EventTrackingDBInternalHandler handler = new EventTrackingDBInternalHandler();
+        handler.driver = System.getProperty("driver");
+        handler.jdbcUrl = System.getProperty("jdbcUrl");
+        handler.user = System.getProperty("user");
+        handler.pass = System.getProperty("pass");
+        handler.table = System.getProperty("table");
+        handler.postConfigurable();
 
-        Connection conn = getConnection(agent);
-        clearTable(conn, agent);
+        Connection conn = getConnection(handler);
+        clearTable(conn, handler);
         List<AgentTrackingNotification> notifications = createNotifications();
-        agent.flush(notifications);
-        long insertedRecords = countRecords(conn, agent);
+        for (AgentTrackingNotification notification : notifications)
+        {
+            handler.handle(notification);
+        }
+        long insertedRecords = countRecords(conn, handler);
 
         Assert.assertEquals(notifications.size(), insertedRecords);
         conn.close();
