@@ -2,6 +2,7 @@ package com.mulesoft.agent.common.internalhandlers;
 
 import com.mulesoft.agent.buffer.BufferedHandler;
 import com.mulesoft.agent.configuration.Configurable;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,11 +63,6 @@ public abstract class AbstractDBInternalHandler<T> extends BufferedHandler<T>
     protected abstract String getInsertStatement (String table);
 
     protected abstract void fillStatement (PreparedStatement statement, T notification) throws SQLException;
-
-    protected boolean isNullOrWhiteSpace (String a)
-    {
-        return a == null || (a.length() > 0 && a.trim().length() <= 0);
-    }
 
     @Override
     protected boolean canHandle (T message)
@@ -139,8 +135,8 @@ public abstract class AbstractDBInternalHandler<T> extends BufferedHandler<T>
         LOGGER.trace("Configuring the AbstractDBInternalHandler...");
         this.isConfigured = false;
 
-        if (isNullOrWhiteSpace(this.driver)
-                || isNullOrWhiteSpace(this.jdbcUrl))
+        if (StringUtils.isEmpty(this.driver)
+                || StringUtils.isEmpty(this.jdbcUrl))
         {
             LOGGER.error("Please review the DatabaseEventTrackingAgent (mule.agent.tracking.handler.database) configuration; " +
                     "You must configure the following properties: driver and jdbcUrl.");

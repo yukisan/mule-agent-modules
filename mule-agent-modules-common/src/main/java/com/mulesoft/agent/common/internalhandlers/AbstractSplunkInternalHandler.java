@@ -7,6 +7,7 @@ import com.mulesoft.agent.configuration.Configurable;
 import com.mulesoft.agent.configuration.PostConfigure;
 import com.mulesoft.agent.configuration.Type;
 import com.splunk.*;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.Layout;
 import org.apache.logging.log4j.core.LogEvent;
@@ -164,11 +165,6 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
         return null;
     }
 
-    protected boolean isNullOrWhiteSpace (String a)
-    {
-        return a == null || (a.length() > 0 && a.trim().length() <= 0);
-    }
-
     protected String getPattern ()
     {
         return null;
@@ -182,7 +178,7 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
     protected String calculatePattern (MapMessage message)
     {
         String pattern = this.getPattern();
-        if (!isNullOrWhiteSpace(pattern))
+        if (StringUtils.isNotEmpty(pattern))
         {
             return pattern;
         }
@@ -291,13 +287,13 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
         this.isConfigured = false;
         this.layout = null;
 
-        if (isNullOrWhiteSpace(this.host)
-                || isNullOrWhiteSpace(this.user)
-                || isNullOrWhiteSpace(this.pass)
-                || isNullOrWhiteSpace(this.scheme)
-                || isNullOrWhiteSpace(this.splunkIndexName)
-                || isNullOrWhiteSpace(this.splunkSource)
-                || isNullOrWhiteSpace(this.splunkSourceType))
+        if (StringUtils.isEmpty(this.host)
+                || StringUtils.isEmpty(this.user)
+                || StringUtils.isEmpty(this.pass)
+                || StringUtils.isEmpty(this.scheme)
+                || StringUtils.isEmpty(this.splunkIndexName)
+                || StringUtils.isEmpty(this.splunkSource)
+                || StringUtils.isEmpty(this.splunkSourceType))
         {
             LOGGER.error("Please review the EventTrackingSplunkInternalHandler (mule.agent.tracking.handler.splunk) configuration; " +
                     "You must configure at least the following properties: user, pass and host.");

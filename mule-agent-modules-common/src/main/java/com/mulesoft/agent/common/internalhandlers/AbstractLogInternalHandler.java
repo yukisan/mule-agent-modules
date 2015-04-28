@@ -10,6 +10,7 @@ import com.mulesoft.agent.handlers.InternalMessageHandler;
 import com.mulesoft.agent.services.OnOffSwitch;
 import com.mulesoft.agent.services.OnOffSwitch.OnOffSwitchDisabler;
 import com.mulesoft.agent.services.OnOffSwitch.OnOffSwitchEnabler;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.Layout;
@@ -159,11 +160,6 @@ public abstract class AbstractLogInternalHandler<T> implements InternalMessageHa
         return null;
     }
 
-    protected boolean isNullOrWhiteSpace (String a)
-    {
-        return a == null || (a.length() > 0 && a.trim().length() <= 0);
-    }
-
     public void enable (boolean state) throws AgentEnableOperationException
     {
         this.enabledSwitch.switchTo(state);
@@ -230,8 +226,8 @@ public abstract class AbstractLogInternalHandler<T> implements InternalMessageHa
             this.logConfiguration.removeLogger(loggerName);
         }
 
-        if (isNullOrWhiteSpace(this.fileName)
-                || isNullOrWhiteSpace(this.filePattern))
+        if (StringUtils.isEmpty(this.fileName)
+                || StringUtils.isEmpty(this.filePattern))
         {
             LOGGER.error("Please review the AbstractLogInternalHandler configuration; " +
                     "You must configure at least the following properties: fileName and filePattern.");
