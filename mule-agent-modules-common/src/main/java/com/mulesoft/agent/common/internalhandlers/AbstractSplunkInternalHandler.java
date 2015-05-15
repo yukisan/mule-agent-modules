@@ -128,10 +128,10 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
     /**
      * <p>
      * Date format used to format the timestamp.
-     * Default: yyyy-MM-dd'T'HH:mm:ssZ
+     * Default: yyyy-MM-dd'T'HH:mm:ss.SZ
      * </p>
      */
-    @Configurable(value = "yyyy-MM-dd'T'HH:mm:ssZ", type = Type.DYNAMIC)
+    @Configurable(value = "yyyy-MM-dd'T'HH:mm:ss.SZ", type = Type.DYNAMIC)
     public String dateFormatPattern;
 
 

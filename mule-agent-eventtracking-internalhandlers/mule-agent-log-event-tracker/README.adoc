@@ -59,7 +59,7 @@ This will guarantee the data is written to disk but could impact performance.
 |String
 |Date format used to format the timestamp.
 |Optional
-|yyyy-MM-dd'T'HH:mm:ssZ
+|yyyy-MM-dd'T'HH:mm:ss.SZ
 
 
 |===
