@@ -26,14 +26,14 @@ so the mule agent can load it to the classpath.
 |user
 |String
 |The username to connect to the database server.
-|Optional
-|blank
+|Required
+|
 
 |pass
 |String
 |The password to connect to the database server.
-|Optional
-|blank
+|Required
+|
 
 |table
 |String
