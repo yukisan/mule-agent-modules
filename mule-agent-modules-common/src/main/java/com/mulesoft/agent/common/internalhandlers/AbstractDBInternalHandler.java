@@ -40,7 +40,7 @@ public abstract class AbstractDBInternalHandler<T> extends BufferedHandler<T>
      * Username in the database server.
      * </p>
      */
-    @Configurable()
+    @Configurable
     public String user;
 
     /**
@@ -48,7 +48,7 @@ public abstract class AbstractDBInternalHandler<T> extends BufferedHandler<T>
      * Password for the database user.
      * </p>
      */
-    @Configurable()
+    @Configurable
     public String pass;
 
     /**
@@ -162,7 +162,7 @@ public abstract class AbstractDBInternalHandler<T> extends BufferedHandler<T>
         }
         catch (SQLException e)
         {
-            LOGGER.error(String.format("There was an error on the connection to the DataBase. Please review your agent configuration."), e);
+            LOGGER.error("There was an error on the connection to the DataBase. Please review your agent configuration.", e);
             return;
         }
 
