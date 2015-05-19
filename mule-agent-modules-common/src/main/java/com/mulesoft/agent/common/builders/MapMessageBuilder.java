@@ -1,26 +1,29 @@
 package com.mulesoft.agent.common.builders;
 
 import org.apache.commons.beanutils.BeanMap;
+import org.apache.commons.lang3.reflect.FieldUtils;
+import org.apache.logging.log4j.core.util.ReflectionUtil;
 import org.apache.logging.log4j.message.MapMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 
-public class MapMessageBuilder<T> implements MessageBuilder<T, MapMessage>
+public class MapMessageBuilder implements MessageBuilder<MapMessage>
 {
     private final static Logger LOGGER = LoggerFactory.getLogger(MapMessageBuilder.class);
 
-    private final Class<T> inputType;
+    private final Class inputType;
     private String timestampGetterName;
     private SimpleDateFormat dateFormat;
     private Method timestampGetter;
 
-    public MapMessageBuilder (String timestampGetterName, String dateFormatPattern, Class<T> inputType)
+    public MapMessageBuilder (String timestampGetterName, String dateFormatPattern, Class inputType)
     {
         this.timestampGetterName = timestampGetterName;
         this.inputType = inputType;
@@ -51,8 +54,22 @@ public class MapMessageBuilder<T> implements MessageBuilder<T, MapMessage>
         return null;
     }
 
+    public String getDefaultPattern() {
+        StringBuilder sb = new StringBuilder("{");
+        Field[] fields = FieldUtils.getAllFields(inputType);
+        for(int i = 0; i < fields.length; i++) {
+            sb.append(String.format("\"%1$s\": \"%%map{%1$s}\"", fields[i].getName()));
+            if(i < fields.length - 1){
+                sb.append(", ");
+            }
+        }
+
+        sb.append("}%n");
+        return sb.toString();
+    }
+
     @Override
-    public MapMessage build (T message)
+    public MapMessage build (Object message)
     {
         // First check if the getter is initialized
         if (this.timestampGetterName != null && this.timestampGetter == null)

@@ -33,7 +33,7 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
 
     private Service service;
     private Index index;
-    private MessageBuilder<T, MapMessage> messageBuilder;
+    private MapMessageBuilder messageBuilder;
     private Layout<? extends Serializable> layout;
     private LogEventFactory factory = new DefaultLogEventFactory();
     private String className = this.getClass().getName();
@@ -135,19 +135,6 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
     public String dateFormatPattern;
 
 
-    private void initializeLayout (MapMessage message)
-    {
-        try
-        {
-            this.layout = PatternLayout.createLayout(calculatePattern(message), null, null, null, true, true, null, null);
-        }
-        catch (Exception e)
-        {
-            LOGGER.error(String.format("There was an error creating the pattern: %s.", this.getPattern()), e);
-            this.isConfigured = false;
-        }
-    }
-
     private MapMessage createMapMessage (T message)
     {
         MapMessage mapMessage = this.messageBuilder.build(message);
@@ -165,9 +152,8 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
         return null;
     }
 
-    protected String getPattern ()
-    {
-        return null;
+    protected String getPattern () {
+        return this.messageBuilder.getDefaultPattern();
     }
 
     protected String getTimestampGetterName ()
@@ -175,30 +161,7 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
         return null;
     }
 
-    protected String calculatePattern (MapMessage message)
-    {
-        String pattern = this.getPattern();
-        if (StringUtils.isNotEmpty(pattern))
-        {
-            return pattern;
-        }
-
-        // Auto-generate a json based pattern
-        StringBuilder sb = new StringBuilder("{");
-        Map<String, String> data = message.getData();
-        Iterator<String> keys = data.keySet().iterator();
-        while (keys.hasNext())
-        {
-            String key = keys.next();
-            sb.append(String.format("\"%1$s\": \"%%map{%1$s}\"", key));
-            if (keys.hasNext())
-            {
-                sb.append(", ");
-            }
-        }
-        sb.append("}%n");
-        return sb.toString();
-    }
+    protected abstract MapMessageBuilder getMessageBuilder();
 
     @Override
     protected boolean canHandle (T message)
@@ -242,11 +205,6 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
                 for (T message : messages)
                 {
                     MapMessage mapMessage = createMapMessage(message);
-                    // Defer the creation of the layout until the MapMessage is created
-                    if (layout == null)
-                    {
-                        initializeLayout(mapMessage);
-                    }
                     LogEvent event = factory.createEvent(className, null, className, Level.INFO, mapMessage, null, null);
                     output.write(layout.toByteArray(event));
                 }
@@ -345,10 +303,17 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
             return;
         }
 
-        Class<T> classType = ((Class<T>) ((ParameterizedType) getClass()
-                .getGenericSuperclass()).getActualTypeArguments()[0]);
+        this.messageBuilder = getMessageBuilder();
 
-        this.messageBuilder = new MapMessageBuilder<>(this.getTimestampGetterName(), this.dateFormatPattern, classType);
+        try
+        {
+            this.layout = PatternLayout.createLayout(this.getPattern(), null, null, null, true, true, null, null);
+        }
+        catch (Exception e)
+        {
+            LOGGER.error("There was an error creating the pattern.", e);
+            this.isConfigured = false;
+        }
 
         this.isConfigured = true;
         LOGGER.trace("Successfully configured the AbstractSplunkInternalHandler internal handler.");
