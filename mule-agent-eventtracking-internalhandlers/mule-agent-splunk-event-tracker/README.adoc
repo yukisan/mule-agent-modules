@@ -71,10 +71,11 @@ and the index doesn't exists, then the internal handler will create it.
 
 |pattern
 |String
-|A log4j2 PatternLayout (https://logging.apache.org/log4j/2.x/manual/layouts.html#PatternLayout).
+| A log4j2 PatternLayout (https://logging.apache.org/log4j/2.x/manual/layouts.html#PatternLayout).
 You can print the properties of the object using the %map{key} notation, for example: %map{timestamp}
 |Optional
-|null; so all the properties will be used as a JSON object.
+|null +
+_[small]#so all the properties will be used as a JSON object#_
 
 |===
 

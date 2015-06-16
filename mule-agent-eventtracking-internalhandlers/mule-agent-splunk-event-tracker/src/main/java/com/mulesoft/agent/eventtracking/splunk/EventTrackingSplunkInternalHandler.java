@@ -1,13 +1,11 @@
 package com.mulesoft.agent.eventtracking.splunk;
 
 import com.mulesoft.agent.common.builders.MapMessageBuilder;
-import com.mulesoft.agent.common.builders.MessageBuilder;
 import com.mulesoft.agent.common.internalhandlers.AbstractSplunkInternalHandler;
 import com.mulesoft.agent.configuration.Configurable;
 import com.mulesoft.agent.configuration.Type;
 import com.mulesoft.agent.domain.tracking.AgentTrackingNotification;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.message.MapMessage;
+import org.apache.commons.lang.StringUtils;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -33,8 +31,10 @@ public class EventTrackingSplunkInternalHandler extends AbstractSplunkInternalHa
     public String pattern;
 
     @Override
-    protected String getPattern () {
-        if(StringUtils.isEmpty(this.pattern)) {
+    protected String getPattern ()
+    {
+        if (StringUtils.isEmpty(this.pattern))
+        {
             return super.getPattern();
         }
         return this.pattern;
@@ -47,7 +47,8 @@ public class EventTrackingSplunkInternalHandler extends AbstractSplunkInternalHa
     }
 
     @Override
-    protected MapMessageBuilder getMessageBuilder() {
+    protected MapMessageBuilder getMessageBuilder ()
+    {
         return new MapMessageBuilder(this.getTimestampGetterName(), this.dateFormatPattern, AgentTrackingNotification.class);
     }
 }

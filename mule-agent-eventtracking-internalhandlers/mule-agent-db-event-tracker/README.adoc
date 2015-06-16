@@ -35,11 +35,23 @@ so the mule agent can load it to the classpath.
 |Required
 |
 
-|table
+|eventsTable
 |String
 |Represents the name of the table in which the agent will store the events.
 |Optional
 |MULE_EVENTS
+
+|annotationsTable
+|String
+|Represents the name of the table in which the agent will store the annotations associated to the main event.
+|Optional
+|MULE_EVENTS_ANNOTATIONS
+
+|businessTable
+|String
+|Represents the name of the table in which the agent will store the custom business events associated to the main event.
+|Optional
+|MULE_EVENTS_BUSINESS
 
 |===
 
@@ -50,6 +62,7 @@ As an example we show the configuration for storing the events on a MySQL databa
 [source,sql]
 ....
 CREATE TABLE MULE_EVENTS (
+    id CHAR(36) NOT NULL,
  	action VARCHAR(500) NULL,
  	application VARCHAR(500) NULL,
  	mule_message VARCHAR(500) NULL,
@@ -58,8 +71,32 @@ CREATE TABLE MULE_EVENTS (
  	path VARCHAR(500) NULL,
  	resource_identifier VARCHAR(500) NULL,
  	timestamp BIGINT NULL,
- 	source TEXT NULL
- )
+ 	source TEXT NULL,
+ 	PRIMARY KEY (id)
+);
+
+CREATE TABLE MULE_EVENTS_ANNOTATIONS (
+  id CHAR(36) NOT NULL,
+  event_id CHAR(36) NOT NULL,
+  annotation_type VARCHAR(100) NULL,
+  annotation_value VARCHAR(255) NULL,
+  PRIMARY KEY (id),
+  KEY FK_MULE_EVENTS_ANNOTATIONS_MULE_EVENTS_IDX (event_id),
+  CONSTRAINT FK_MULE_EVENTS_ANNOTATIONS_MULE_EVENTS
+  FOREIGN KEY (event_id) REFERENCES MULE_EVENTS (id) ON DELETE NO ACTION ON UPDATE NO ACTION
+);
+
+CREATE TABLE MULE_EVENTS_BUSINESS (
+  id CHAR(36) NOT NULL,
+  event_id CHAR(36) NOT NULL,
+  business_key VARCHAR(30) NOT NULL,
+  business_value VARCHAR(255) NULL,
+  PRIMARY KEY (id),
+  KEY FK_MULE_EVENTS_BUSINESS_IDX (event_id),
+  CONSTRAINT FK_MULE_EVENTS_BUSINESS_MULE_EVENTS
+  FOREIGN KEY (event_id) REFERENCES MULE_EVENTS (id) ON DELETE NO ACTION ON UPDATE NO ACTION
+);
+
 ....
 
 === Configuration Example for MySQL
@@ -73,5 +110,4 @@ CREATE TABLE MULE_EVENTS (
     jdbcUrl: jdbc:mysql://192.168.61.128/mule
     user: root
     pass: test
-    table: mule
 ....

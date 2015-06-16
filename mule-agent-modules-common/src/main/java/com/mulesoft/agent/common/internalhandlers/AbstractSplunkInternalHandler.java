@@ -2,12 +2,11 @@ package com.mulesoft.agent.common.internalhandlers;
 
 import com.mulesoft.agent.buffer.BufferedHandler;
 import com.mulesoft.agent.common.builders.MapMessageBuilder;
-import com.mulesoft.agent.common.builders.MessageBuilder;
 import com.mulesoft.agent.configuration.Configurable;
 import com.mulesoft.agent.configuration.PostConfigure;
 import com.mulesoft.agent.configuration.Type;
 import com.splunk.*;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.Layout;
 import org.apache.logging.log4j.core.LogEvent;
@@ -21,10 +20,8 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
-import java.lang.reflect.ParameterizedType;
 import java.net.Socket;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Map;
 
 public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T>
@@ -152,7 +149,8 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
         return null;
     }
 
-    protected String getPattern () {
+    protected String getPattern ()
+    {
         return this.messageBuilder.getDefaultPattern();
     }
 
@@ -161,7 +159,7 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
         return null;
     }
 
-    protected abstract MapMessageBuilder getMessageBuilder();
+    protected abstract MapMessageBuilder getMessageBuilder ();
 
     @Override
     protected boolean canHandle (T message)

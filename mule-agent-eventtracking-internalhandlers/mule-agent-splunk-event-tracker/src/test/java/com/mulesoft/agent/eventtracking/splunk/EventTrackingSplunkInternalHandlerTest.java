@@ -16,7 +16,8 @@ public class EventTrackingSplunkInternalHandlerTest
 {
 
     @Test
-    public void test () throws IOException
+    public void test ()
+            throws IOException
     {
         EventTrackingSplunkInternalHandler handler = new EventTrackingSplunkInternalHandler();
         handler.setEnabled(true);

@@ -2,13 +2,12 @@ package com.mulesoft.agent.common.internalhandlers;
 
 import com.mulesoft.agent.buffer.BufferedHandler;
 import com.mulesoft.agent.configuration.Configurable;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Collection;
 
@@ -16,7 +15,6 @@ public abstract class AbstractDBInternalHandler<T> extends BufferedHandler<T>
 {
     private final static Logger LOGGER = LoggerFactory.getLogger(AbstractDBInternalHandler.class);
 
-    private String insertStatement;
     private boolean isConfigured;
 
     /**
@@ -51,18 +49,8 @@ public abstract class AbstractDBInternalHandler<T> extends BufferedHandler<T>
     @Configurable
     public String pass;
 
-    /**
-     * <p>
-     * Table name in which the Mule agent will store the events.
-     * Default: 'MULE_EVENTS'
-     * </p>
-     */
-    @Configurable("MULE_EVENTS")
-    public String table;
-
-    protected abstract String getInsertStatement (String table);
-
-    protected abstract void fillStatement (PreparedStatement statement, T notification) throws SQLException;
+    protected abstract void insert (Connection connection, Collection<T> messages)
+            throws SQLException;
 
     @Override
     protected boolean canHandle (T message)
@@ -78,30 +66,28 @@ public abstract class AbstractDBInternalHandler<T> extends BufferedHandler<T>
             return false;
         }
 
-        LOGGER.trace(String.format("Flushing %s notifications.", messages.size()));
+        LOGGER.trace(String.format("Flushing %s messages.", messages.size()));
 
         Connection connection = null;
         try
         {
             connection = DriverManager.getConnection(this.jdbcUrl, this.user, this.pass);
-            PreparedStatement statement = null;
+            connection.setAutoCommit(false);
             try
             {
-                statement = connection.prepareStatement(this.insertStatement);
-                for (T message : messages)
-                {
-                    LOGGER.trace("Flushing Message: " + message);
-                    fillStatement(statement, message);
-                    statement.addBatch();
-                }
-
-                statement.executeBatch();
+                insert(connection, messages);
+                connection.commit();
             }
-            finally
+            catch (Exception ex)
             {
-                if (statement != null)
+                LOGGER.error("There was an error inserting the messages. Rolling back the transaction.", ex);
+                try
                 {
-                    statement.close();
+                    connection.rollback();
+                }
+                catch (SQLException sqlEx)
+                {
+                    LOGGER.error("There was an error while rolling back the transaction.", sqlEx);
                 }
             }
 
@@ -166,9 +152,7 @@ public abstract class AbstractDBInternalHandler<T> extends BufferedHandler<T>
             return;
         }
 
-        this.insertStatement = getInsertStatement(this.table);
         this.isConfigured = true;
-        LOGGER.trace("Insert SQL Statement: " + insertStatement);
         LOGGER.trace("Successfully configured the AbstractDBInternalHandler internal handler.");
     }
 }

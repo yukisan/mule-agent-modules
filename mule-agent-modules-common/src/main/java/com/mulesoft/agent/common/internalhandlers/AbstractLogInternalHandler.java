@@ -2,7 +2,6 @@ package com.mulesoft.agent.common.internalhandlers;
 
 import com.mulesoft.agent.AgentEnableOperationException;
 import com.mulesoft.agent.common.builders.MapMessageBuilder;
-import com.mulesoft.agent.common.builders.MessageBuilder;
 import com.mulesoft.agent.configuration.Configurable;
 import com.mulesoft.agent.configuration.PostConfigure;
 import com.mulesoft.agent.configuration.Type;
@@ -10,7 +9,7 @@ import com.mulesoft.agent.handlers.InternalMessageHandler;
 import com.mulesoft.agent.services.OnOffSwitch;
 import com.mulesoft.agent.services.OnOffSwitch.OnOffSwitchDisabler;
 import com.mulesoft.agent.services.OnOffSwitch.OnOffSwitchEnabler;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.Layout;
@@ -29,8 +28,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
-import java.lang.reflect.ParameterizedType;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.Deflater;
@@ -145,7 +142,8 @@ public abstract class AbstractLogInternalHandler<T> implements InternalMessageHa
         return null;
     }
 
-    protected String getPattern () {
+    protected String getPattern ()
+    {
         return this.messageBuilder.getDefaultPattern();
     }
 
@@ -154,7 +152,8 @@ public abstract class AbstractLogInternalHandler<T> implements InternalMessageHa
         return null;
     }
 
-    public void enable (boolean state) throws AgentEnableOperationException
+    public void enable (boolean state)
+            throws AgentEnableOperationException
     {
         this.enabledSwitch.switchTo(state);
     }
@@ -164,7 +163,7 @@ public abstract class AbstractLogInternalHandler<T> implements InternalMessageHa
         return this.enabledSwitch.isEnabled();
     }
 
-    protected abstract MapMessageBuilder getMessageBuilder();
+    protected abstract MapMessageBuilder getMessageBuilder ();
 
     @Override
     public boolean handle (T message)
@@ -187,7 +186,8 @@ public abstract class AbstractLogInternalHandler<T> implements InternalMessageHa
     }
 
     @PostConfigure
-    public void postConfigurable () throws AgentEnableOperationException
+    public void postConfigurable ()
+            throws AgentEnableOperationException
     {
         LOGGER.trace("Configuring the AbstractLogInternalHandler internal handler...");
         this.isConfigured = false;
@@ -198,7 +198,8 @@ public abstract class AbstractLogInternalHandler<T> implements InternalMessageHa
                     new OnOffSwitchEnabler()
                     {
                         @Override
-                        public void enable () throws AgentEnableOperationException
+                        public void enable ()
+                                throws AgentEnableOperationException
                         {
                             postConfigurable();
                         }
@@ -206,7 +207,8 @@ public abstract class AbstractLogInternalHandler<T> implements InternalMessageHa
                     new OnOffSwitchDisabler()
                     {
                         @Override
-                        public void disable () throws AgentEnableOperationException
+                        public void disable ()
+                                throws AgentEnableOperationException
                         {
                             postConfigurable();
                         }

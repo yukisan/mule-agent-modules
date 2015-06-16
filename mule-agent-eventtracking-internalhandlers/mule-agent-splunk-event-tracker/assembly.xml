@@ -1,5 +1,4 @@
 <assembly>
-    <id>splunk-eventtracking</id>
     <formats>
         <format>zip</format>
     </formats>

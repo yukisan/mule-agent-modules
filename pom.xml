@@ -3,7 +3,7 @@
     <parent>
         <artifactId>mule-agent-common</artifactId>
         <groupId>com.mulesoft.agent</groupId>
-        <version>1.0.1-SNAPSHOT</version>
+        <version>1.1.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -20,12 +20,15 @@
     </modules>
 
     <properties>
+        <common.logging.version>1.1.3</common.logging.version>
+        <common.beanutils.version>1.9.2</common.beanutils.version>
+        <log4j.version>2.1</log4j.version>
+        <splunk.version>1.4.0.0</splunk.version>
+        <uuid.version>3.1.3</uuid.version>
+        <spring.version>3.2.10.RELEASE</spring.version>
+        <javax.validation.version>1.0.0.GA</javax.validation.version>
+
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <mule.agent.api.version>1.0.1-SNAPSHOT</mule.agent.api.version>
-        <aws.sdk.version>1.6.0</aws.sdk.version>
-        <joda.time.version>1.6</joda.time.version>
-        <log4j.version>1.2.16</log4j.version>
-        <junit.version>4.10</junit.version>
     </properties>
 
     <build>
@@ -57,37 +60,67 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-              <groupId>com.mulesoft.agent</groupId>
-              <artifactId>mule-agent-api</artifactId>
-              <version>${mule.agent.api.version}</version>
-              <scope>provided</scope>
+                <groupId>com.splunk</groupId>
+                <artifactId>splunk</artifactId>
+                <version>${splunk.version}</version>
             </dependency>
             <dependency>
-              <groupId>com.amazonaws</groupId>
-              <artifactId>aws-java-sdk</artifactId>
-              <version>${aws.sdk.version}</version>
+                <groupId>com.fasterxml.uuid</groupId>
+                <artifactId>java-uuid-generator</artifactId>
+                <version>${uuid.version}</version>
             </dependency>
 
             <dependency>
-              <groupId>joda-time</groupId>
-              <artifactId>joda-time</artifactId>
-              <version>${joda.time.version}</version>
+                <groupId>javax.validation</groupId>
+                <artifactId>validation-api</artifactId>
+                <version>${javax.validation.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.mulesoft.agent</groupId>
+                <artifactId>mule-agent-api</artifactId>
+                <version>${mule.agent.api.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-core</artifactId>
+                <version>${spring.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>commons-beanutils</groupId>
+                <artifactId>commons-beanutils</artifactId>
+                <version>${common.beanutils.version}</version>
+                <scope>provided</scope>
             </dependency>
 
             <!-- Logging dependencies -->
             <dependency>
-              <groupId>log4j</groupId>
-              <artifactId>log4j</artifactId>
-              <version>${log4j.version}</version>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-simple</artifactId>
+                <version>${slfj4.version}</version>
+                <scope>provided</scope>
             </dependency>
 
-            <!-- Test dependencies -->
             <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>${junit.version}</version>
-                <scope>test</scope>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-api</artifactId>
+                <version>${log4j.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-core</artifactId>
+                <version>${log4j.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-logging</groupId>
+                <artifactId>commons-logging</artifactId>
+                <version>${common.logging.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 </project>
