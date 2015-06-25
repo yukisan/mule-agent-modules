@@ -1,5 +1,4 @@
 <assembly>
-    <id>db-eventtracking</id>
     <formats>
         <format>zip</format>
     </formats>

@@ -13,7 +13,8 @@ import java.util.List;
 public class EventTrackingLogInternalHandlerTest
 {
     @Test
-    public void test () throws AgentEnableOperationException
+    public void test ()
+            throws AgentEnableOperationException
     {
         EventTrackingLogInternalHandler handler = new EventTrackingLogInternalHandler();
         handler.pattern = System.getProperty("pattern");

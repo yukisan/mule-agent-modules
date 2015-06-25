@@ -23,13 +23,6 @@ a %i which represents an integer counter.
 |Required
 |
 
-|pattern
-|String
-| Layout pattern used to write the events.
-For more information see: https://logging.apache.org/log4j/2.x/manual/layouts.html#PatternLayout
-|Optional
-|[%d] %map %n
-
 |bufferSize
 |int
 |The buffer size in bytes.
@@ -59,8 +52,15 @@ This will guarantee the data is written to disk but could impact performance.
 |String
 |Date format used to format the timestamp.
 |Optional
-|yyyy-MM-dd'T'HH:mm:ssZ
+|yyyy-MM-dd'T'HH:mm:ss.SZ
 
+|pattern
+|String
+| A log4j2 PatternLayout (https://logging.apache.org/log4j/2.x/manual/layouts.html#PatternLayout).
+You can print the properties of the object using the %map{key} notation, for example: %map{timestamp}
+|Optional
+|null +
+_[small]#so all the properties will be used as a JSON object#_
 
 |===
 

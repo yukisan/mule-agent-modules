@@ -29,8 +29,8 @@ Mule ESB flows in a Splunk instance.
 |port
 |int
 |Splunk management port.
-|Required
-|
+|Optional
+|8089
 
 |scheme
 |String
@@ -67,14 +67,15 @@ and the index doesn't exists, then the internal handler will create it.
 |String
 |Date format used to format the timestamp.
 |Optional
-|yyyy-MM-dd'T'HH:mm:ssZ
+|yyyy-MM-dd'T'HH:mm:ssSZ
 
 |pattern
 |String
-|A log4j2 PatternLayout (https://logging.apache.org/log4j/2.x/manual/layouts.html#PatternLayout).
+| A log4j2 PatternLayout (https://logging.apache.org/log4j/2.x/manual/layouts.html#PatternLayout).
 You can print the properties of the object using the %map{key} notation, for example: %map{timestamp}
 |Optional
-|null; so all the properties will be used as a JSON object.
+|null +
+_[small]#so all the properties will be used as a JSON object#_
 
 |===
 

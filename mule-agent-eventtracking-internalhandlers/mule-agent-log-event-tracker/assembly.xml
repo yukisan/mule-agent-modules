@@ -1,5 +1,4 @@
 <assembly>
-    <id>mule-agent-log-event-tracker</id>
     <formats>
         <format>zip</format>
     </formats>

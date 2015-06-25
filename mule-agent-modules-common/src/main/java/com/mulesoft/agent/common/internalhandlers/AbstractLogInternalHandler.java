@@ -2,7 +2,6 @@ package com.mulesoft.agent.common.internalhandlers;
 
 import com.mulesoft.agent.AgentEnableOperationException;
 import com.mulesoft.agent.common.builders.MapMessageBuilder;
-import com.mulesoft.agent.common.builders.MessageBuilder;
 import com.mulesoft.agent.configuration.Configurable;
 import com.mulesoft.agent.configuration.PostConfigure;
 import com.mulesoft.agent.configuration.Type;
@@ -10,7 +9,7 @@ import com.mulesoft.agent.handlers.InternalMessageHandler;
 import com.mulesoft.agent.services.OnOffSwitch;
 import com.mulesoft.agent.services.OnOffSwitch.OnOffSwitchDisabler;
 import com.mulesoft.agent.services.OnOffSwitch.OnOffSwitchEnabler;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.Layout;
@@ -29,7 +28,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
-import java.lang.reflect.ParameterizedType;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.Deflater;
@@ -42,7 +40,7 @@ public abstract class AbstractLogInternalHandler<T> implements InternalMessageHa
     private String loggerName = className + "." + "logger";
     private String appenderName = className + "." + "appender";
     private String contextName = className + "." + "context";
-    private MessageBuilder<T, MapMessage> messageBuilder;
+    private MapMessageBuilder messageBuilder;
     private Configuration logConfiguration;
     private LoggerConfig loggerConfig;
     private Appender appender;
@@ -79,17 +77,6 @@ public abstract class AbstractLogInternalHandler<T> implements InternalMessageHa
      */
     @Configurable(type = Type.DYNAMIC)
     public String filePattern;
-
-    /**
-     * <p>
-     * Layout pattern used to write the events.
-     * For more information see:
-     * <a href="https://logging.apache.org/log4j/2.x/manual/layouts.html#PatternLayout">Pattern Layout</a>
-     * Default: [%d] %map %n
-     * </p>
-     */
-    @Configurable(value = "[%d] %map %n", type = Type.DYNAMIC)
-    public String pattern;
 
     /**
      * <p>
@@ -131,10 +118,10 @@ public abstract class AbstractLogInternalHandler<T> implements InternalMessageHa
     /**
      * <p>
      * Date format used to format the timestamp.
-     * Default: yyyy-MM-dd'T'HH:mm:ssZ
+     * Default: yyyy-MM-dd'T'HH:mm:ss.SZ
      * </p>
      */
-    @Configurable(value = "yyyy-MM-dd'T'HH:mm:ssZ", type = Type.DYNAMIC)
+    @Configurable(value = "yyyy-MM-dd'T'HH:mm:ss.SZ", type = Type.DYNAMIC)
     public String dateFormatPattern;
 
 
@@ -155,12 +142,18 @@ public abstract class AbstractLogInternalHandler<T> implements InternalMessageHa
         return null;
     }
 
+    protected String getPattern ()
+    {
+        return this.messageBuilder.getDefaultPattern();
+    }
+
     protected Map<String, String> augmentMapMessage (T message)
     {
         return null;
     }
 
-    public void enable (boolean state) throws AgentEnableOperationException
+    public void enable (boolean state)
+            throws AgentEnableOperationException
     {
         this.enabledSwitch.switchTo(state);
     }
@@ -169,6 +162,8 @@ public abstract class AbstractLogInternalHandler<T> implements InternalMessageHa
     {
         return this.enabledSwitch.isEnabled();
     }
+
+    protected abstract MapMessageBuilder getMessageBuilder ();
 
     @Override
     public boolean handle (T message)
@@ -191,7 +186,8 @@ public abstract class AbstractLogInternalHandler<T> implements InternalMessageHa
     }
 
     @PostConfigure
-    public void postConfigurable () throws AgentEnableOperationException
+    public void postConfigurable ()
+            throws AgentEnableOperationException
     {
         LOGGER.trace("Configuring the AbstractLogInternalHandler internal handler...");
         this.isConfigured = false;
@@ -202,7 +198,8 @@ public abstract class AbstractLogInternalHandler<T> implements InternalMessageHa
                     new OnOffSwitchEnabler()
                     {
                         @Override
-                        public void enable () throws AgentEnableOperationException
+                        public void enable ()
+                                throws AgentEnableOperationException
                         {
                             postConfigurable();
                         }
@@ -210,7 +207,8 @@ public abstract class AbstractLogInternalHandler<T> implements InternalMessageHa
                     new OnOffSwitchDisabler()
                     {
                         @Override
-                        public void disable () throws AgentEnableOperationException
+                        public void disable ()
+                                throws AgentEnableOperationException
                         {
                             postConfigurable();
                         }
@@ -239,13 +237,9 @@ public abstract class AbstractLogInternalHandler<T> implements InternalMessageHa
             this.logContext = new LoggerContext(contextName);
             this.logConfiguration = logContext.getConfiguration();
 
-            Class<T> classType = ((Class<T>) ((ParameterizedType) getClass()
-                    .getGenericSuperclass()).getActualTypeArguments()[0]);
+            this.messageBuilder = getMessageBuilder();
 
-            this.messageBuilder = new MapMessageBuilder<>(this.getTimestampGetterName(), this.dateFormatPattern,
-                    classType);
-
-            Layout<? extends Serializable> layout = PatternLayout.createLayout(this.pattern, null, null, null, true, true, null, null);
+            Layout<? extends Serializable> layout = PatternLayout.createLayout(this.getPattern(), null, null, null, true, true, null, null);
             String dayTrigger = TimeUnit.DAYS.toMillis(this.daysTrigger) + "";
             String sizeTrigger = (this.mbTrigger * 1024 * 1024) + "";
             TimeBasedTriggeringPolicy timeBasedTriggeringPolicy = TimeBasedTriggeringPolicy.createPolicy(dayTrigger, "true");
