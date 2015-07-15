@@ -3,8 +3,8 @@ package com.mulesoft.agent.common.internalhandlers;
 import com.mulesoft.agent.buffer.BufferedHandler;
 import com.mulesoft.agent.common.builders.MapMessageBuilder;
 import com.mulesoft.agent.configuration.Configurable;
-import com.mulesoft.agent.configuration.PostConfigure;
 import com.mulesoft.agent.configuration.Type;
+import com.mulesoft.agent.handlers.exception.InitializationException;
 import com.splunk.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.Level;
@@ -41,7 +41,6 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
      */
     private final int TOKEN_EXPIRATION_MS = 55 * 60 * 1000; // I use 55 minutes, instead of 60 as a safe net.
     private long lastConnection;
-    private boolean isConfigured;
 
     /**
      * <p>
@@ -132,7 +131,7 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
     public String dateFormatPattern;
 
 
-    private MapMessage createMapMessage (T message)
+    private MapMessage createMapMessage(T message)
     {
         MapMessage mapMessage = this.messageBuilder.build(message);
         // Append additional properties
@@ -144,45 +143,40 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
         return mapMessage;
     }
 
-    protected Map<String, String> augmentMapMessage (T message)
+    protected Map<String, String> augmentMapMessage(T message)
     {
         return null;
     }
 
-    protected String getPattern ()
+    protected String getPattern()
     {
         return this.messageBuilder.getDefaultPattern();
     }
 
-    protected String getTimestampGetterName ()
+    protected String getTimestampGetterName()
     {
         return null;
     }
 
-    protected abstract MapMessageBuilder getMessageBuilder ();
+    protected abstract MapMessageBuilder getMessageBuilder();
 
     @Override
-    protected boolean canHandle (T message)
+    protected boolean canHandle(T message)
     {
         return true;
     }
 
     @Override
-    protected boolean flush (final Collection<T> messages)
+    protected boolean flush(final Collection<T> messages)
     {
-        LOGGER.trace(String.format("Flushing %s notifications.", messages.size()));
-
-        if (!this.isConfigured)
-        {
-            return false;
-        }
+        LOGGER.debug(String.format("Flushing %s notifications.", messages.size()));
 
         try
         {
             // Check if the authentication token, isn't expired
             if ((System.currentTimeMillis() - this.lastConnection) >= TOKEN_EXPIRATION_MS)
             {
-                LOGGER.trace("Refreshing the session token.");
+                LOGGER.info("Refreshing the session token.");
                 service.login();
             }
             /**
@@ -235,12 +229,11 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
         }
     }
 
-    @PostConfigure
-    public void postConfigurable ()
+    @Override
+    public void initialize() throws InitializationException
     {
-        super.postConfigurable();
-        LOGGER.trace("Configuring the AbstractSplunkInternalHandler internal handler...");
-        this.isConfigured = false;
+        super.initialize();
+        LOGGER.debug("Configuring the Common Splunk Internal Handler...");
         this.layout = null;
 
         if (StringUtils.isEmpty(this.host)
@@ -251,14 +244,13 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
                 || StringUtils.isEmpty(this.splunkSource)
                 || StringUtils.isEmpty(this.splunkSourceType))
         {
-            LOGGER.error("Please review the EventTrackingSplunkInternalHandler (mule.agent.tracking.handler.splunk) configuration; " +
-                    "You must configure at least the following properties: user, pass and host.");
-            return;
+            throw new InitializationException("Please review configuration; " +
+                    "you must configure the following properties: user, pass and host.");
         }
 
         try
         {
-            LOGGER.trace(String.format("Connecting to the Splunk server: %s:%s.", this.host, this.port));
+            LOGGER.debug(String.format("Connecting to the Splunk server: %s:%s.", this.host, this.port));
             ServiceArgs loginArgs = new ServiceArgs();
             loginArgs.setUsername(this.user);
             loginArgs.setPassword(this.pass);
@@ -272,17 +264,16 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
             }
             this.service = Service.connect(loginArgs);
             this.lastConnection = System.currentTimeMillis();
-            LOGGER.trace("Successfully connected to the Splunk server.");
+            LOGGER.debug("Successfully connected to the Splunk server.");
         }
         catch (Exception e)
         {
-            LOGGER.error("There was an error connecting to the Splunk server. Please review your settings.", e);
-            return;
+            throw new InitializationException("There was an error connecting to the Splunk server. Please review your settings.", e);
         }
 
         try
         {
-            LOGGER.trace(String.format("Retrieving the Splunk index: %s", this.splunkIndexName));
+            LOGGER.debug(String.format("Retrieving the Splunk index: %s", this.splunkIndexName));
             this.index = service.getIndexes().get(this.splunkIndexName);
             if (index == null)
             {
@@ -290,15 +281,14 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
                 this.index = service.getIndexes().create(this.splunkIndexName);
                 if (this.index == null)
                 {
-                    throw new Exception(String.format("Couldn't create the Splunk index: %s", this.splunkIndexName));
+                    throw new InitializationException(String.format("Couldn't create the Splunk index: %s", this.splunkIndexName));
                 }
-                LOGGER.trace(String.format("Splunk index: %s, created successfully.", this.splunkIndexName));
+                LOGGER.debug(String.format("Splunk index: %s, created successfully.", this.splunkIndexName));
             }
         }
         catch (Exception e)
         {
-            LOGGER.error("There was an error obtaining the Splunk index.", e);
-            return;
+            throw new InitializationException("There was an error obtaining the Splunk index.", e);
         }
 
         this.messageBuilder = getMessageBuilder();
@@ -309,11 +299,9 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
         }
         catch (Exception e)
         {
-            LOGGER.error("There was an error creating the pattern.", e);
-            this.isConfigured = false;
+            throw new InitializationException("There was an error creating the pattern.", e);
         }
 
-        this.isConfigured = true;
-        LOGGER.trace("Successfully configured the AbstractSplunkInternalHandler internal handler.");
+        LOGGER.debug("Successfully configured the Common Splunk Internal Handler.");
     }
 }

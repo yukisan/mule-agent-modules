@@ -5,10 +5,9 @@ import com.mulesoft.agent.common.builders.MapMessageBuilder;
 import com.mulesoft.agent.configuration.Configurable;
 import com.mulesoft.agent.configuration.PostConfigure;
 import com.mulesoft.agent.configuration.Type;
-import com.mulesoft.agent.handlers.InternalMessageHandler;
+import com.mulesoft.agent.handlers.InitializableInternalMessageHandler;
+import com.mulesoft.agent.handlers.exception.InitializationException;
 import com.mulesoft.agent.services.OnOffSwitch;
-import com.mulesoft.agent.services.OnOffSwitch.OnOffSwitchDisabler;
-import com.mulesoft.agent.services.OnOffSwitch.OnOffSwitchEnabler;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.Appender;
@@ -32,7 +31,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.Deflater;
 
-public abstract class AbstractLogInternalHandler<T> implements InternalMessageHandler<T>
+public abstract class AbstractLogInternalHandler<T> implements InitializableInternalMessageHandler<T>
 {
     private final static Logger LOGGER = LoggerFactory.getLogger(AbstractLogInternalHandler.class);
 
@@ -45,7 +44,6 @@ public abstract class AbstractLogInternalHandler<T> implements InternalMessageHa
     private LoggerConfig loggerConfig;
     private Appender appender;
     private LoggerContext logContext;
-    private boolean isConfigured = false;
 
     protected org.apache.logging.log4j.core.Logger internalLogger;
     protected OnOffSwitch enabledSwitch;
@@ -125,7 +123,7 @@ public abstract class AbstractLogInternalHandler<T> implements InternalMessageHa
     public String dateFormatPattern;
 
 
-    private MapMessage createMapMessage (T message)
+    private MapMessage createMapMessage(T message)
     {
         MapMessage mapMessage = this.messageBuilder.build(message);
         // Append additional properties
@@ -137,38 +135,38 @@ public abstract class AbstractLogInternalHandler<T> implements InternalMessageHa
         return mapMessage;
     }
 
-    protected String getTimestampGetterName ()
+    protected String getTimestampGetterName()
     {
         return null;
     }
 
-    protected String getPattern ()
+    protected String getPattern()
     {
         return this.messageBuilder.getDefaultPattern();
     }
 
-    protected Map<String, String> augmentMapMessage (T message)
+    protected Map<String, String> augmentMapMessage(T message)
     {
         return null;
     }
 
-    public void enable (boolean state)
+    public void enable(boolean state)
             throws AgentEnableOperationException
     {
         this.enabledSwitch.switchTo(state);
     }
 
-    public boolean isEnabled ()
+    public boolean isEnabled()
     {
         return this.enabledSwitch.isEnabled();
     }
 
-    protected abstract MapMessageBuilder getMessageBuilder ();
+    protected abstract MapMessageBuilder getMessageBuilder();
 
     @Override
-    public boolean handle (T message)
+    public boolean handle(T message)
     {
-        if (this.isConfigured && this.isEnabled())
+        if (this.isEnabled())
         {
             try
             {
@@ -186,35 +184,15 @@ public abstract class AbstractLogInternalHandler<T> implements InternalMessageHa
     }
 
     @PostConfigure
-    public void postConfigurable ()
-            throws AgentEnableOperationException
+    public void postConfigurable()
     {
-        LOGGER.trace("Configuring the AbstractLogInternalHandler internal handler...");
-        this.isConfigured = false;
+        this.enabledSwitch = OnOffSwitch.newNullSwitch(this.enabled);
+    }
 
-        if (this.enabledSwitch == null)
-        {
-            this.enabledSwitch = new OnOffSwitch(this.enabled,
-                    new OnOffSwitchEnabler()
-                    {
-                        @Override
-                        public void enable ()
-                                throws AgentEnableOperationException
-                        {
-                            postConfigurable();
-                        }
-                    },
-                    new OnOffSwitchDisabler()
-                    {
-                        @Override
-                        public void disable ()
-                                throws AgentEnableOperationException
-                        {
-                            postConfigurable();
-                        }
-                    }
-            );
-        }
+    @Override
+    public void initialize() throws InitializationException
+    {
+        LOGGER.debug("Configuring the Common Log Internal Handler...");
 
         // Check if we should disable the loggers
         if (this.logContext != null)
@@ -227,9 +205,8 @@ public abstract class AbstractLogInternalHandler<T> implements InternalMessageHa
         if (StringUtils.isEmpty(this.fileName)
                 || StringUtils.isEmpty(this.filePattern))
         {
-            LOGGER.error("Please review the AbstractLogInternalHandler configuration; " +
-                    "You must configure at least the following properties: fileName and filePattern.");
-            return;
+            throw new InitializationException("Please review configuration; " +
+                    "you must configure the following properties: fileName and filePattern.");
         }
 
         try
@@ -263,11 +240,9 @@ public abstract class AbstractLogInternalHandler<T> implements InternalMessageHa
         }
         catch (Exception e)
         {
-            LOGGER.error("There was an error configuring the AbstractLogInternalHandler internal handler.", e);
-            return;
+            throw new InitializationException("There was an error configuring the AbstractLogInternalHandler internal handler.", e);
         }
 
-        this.isConfigured = true;
-        LOGGER.trace("Successfully configured the AbstractLogInternalHandler internal handler.");
+        LOGGER.debug("Successfully configured the Common Log Internal Handler.");
     }
 }

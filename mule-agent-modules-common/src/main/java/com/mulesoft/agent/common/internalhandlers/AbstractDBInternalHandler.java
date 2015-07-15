@@ -2,6 +2,7 @@ package com.mulesoft.agent.common.internalhandlers;
 
 import com.mulesoft.agent.buffer.BufferedHandler;
 import com.mulesoft.agent.configuration.Configurable;
+import com.mulesoft.agent.handlers.exception.InitializationException;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,8 +15,6 @@ import java.util.Collection;
 public abstract class AbstractDBInternalHandler<T> extends BufferedHandler<T>
 {
     private final static Logger LOGGER = LoggerFactory.getLogger(AbstractDBInternalHandler.class);
-
-    private boolean isConfigured;
 
     /**
      * <p>
@@ -49,24 +48,19 @@ public abstract class AbstractDBInternalHandler<T> extends BufferedHandler<T>
     @Configurable
     public String pass;
 
-    protected abstract void insert (Connection connection, Collection<T> messages)
+    protected abstract void insert(Connection connection, Collection<T> messages)
             throws SQLException;
 
     @Override
-    protected boolean canHandle (T message)
+    protected boolean canHandle(T message)
     {
         return true;
     }
 
     @Override
-    protected boolean flush (Collection<T> messages)
+    protected boolean flush(Collection<T> messages)
     {
-        if (!this.isConfigured)
-        {
-            return false;
-        }
-
-        LOGGER.trace(String.format("Flushing %s messages.", messages.size()));
+        LOGGER.debug(String.format("Flushing %s messages.", messages.size()));
 
         Connection connection = null;
         try
@@ -115,18 +109,16 @@ public abstract class AbstractDBInternalHandler<T> extends BufferedHandler<T>
     }
 
     @Override
-    public void postConfigurable ()
+    public void initialize() throws InitializationException
     {
-        super.postConfigurable();
-        LOGGER.trace("Configuring the AbstractDBInternalHandler...");
-        this.isConfigured = false;
+        super.initialize();
+        LOGGER.debug("Configuring the Common DB Internal Handler...");
 
         if (StringUtils.isEmpty(this.driver)
                 || StringUtils.isEmpty(this.jdbcUrl))
         {
-            LOGGER.error("Please review the DatabaseEventTrackingAgent (mule.agent.tracking.handler.database) configuration; " +
-                    "You must configure the following properties: driver and jdbcUrl.");
-            return;
+            throw new InitializationException("Please review configuration; " +
+                    "you must configure the following properties: driver and jdbcUrl.");
         }
 
         try
@@ -135,24 +127,22 @@ public abstract class AbstractDBInternalHandler<T> extends BufferedHandler<T>
         }
         catch (ClassNotFoundException e)
         {
-            LOGGER.error(String.format("The DatabaseEventTrackingAgent (database.agent.eventtracking) couldn't load the database driver '%s'. " +
+            throw new InitializationException(String.format("Couldn't load the database driver '%s'. " +
                     "Did you copy the JAR driver to the {MULE_HOME}/plugins/mule-agent-plugin/lib?", driver), e);
-            return;
         }
 
         try
         {
-            LOGGER.trace("Testing database connection...");
+            LOGGER.debug("Testing database connection...");
             DriverManager.getConnection(this.jdbcUrl, this.user, this.pass).close();
-            LOGGER.trace("Database connection OK!.");
+            LOGGER.debug("Database connection OK!.");
         }
         catch (SQLException e)
         {
-            LOGGER.error("There was an error on the connection to the DataBase. Please review your agent configuration.", e);
-            return;
+            throw new InitializationException("There was an error on the connection to the DataBase. " +
+                    "Please review your agent configuration.", e);
         }
 
-        this.isConfigured = true;
-        LOGGER.trace("Successfully configured the AbstractDBInternalHandler internal handler.");
+        LOGGER.debug("Successfully configured the Common DB Internal Handler.");
     }
 }
