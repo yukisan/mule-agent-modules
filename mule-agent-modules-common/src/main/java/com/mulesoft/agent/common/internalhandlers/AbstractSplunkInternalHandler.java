@@ -116,10 +116,10 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
     /**
      * <p>
      * The sourcetype used on the events sent to Splunk.
-     * Default: _json
+     * Default: mule
      * </p>
      */
-    @Configurable(value = "_json", type = Type.DYNAMIC)
+    @Configurable(value = "mule", type = Type.DYNAMIC)
     public String splunkSourceType;
 
     /**

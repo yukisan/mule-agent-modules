@@ -61,7 +61,7 @@ and the index doesn't exists, then the internal handler will create it.
 |String
 |The sourcetype used on the events sent to Splunk.
 |Optional
-|_json
+|mule
 
 |dateFormatPattern
 |String
