@@ -7,6 +7,10 @@ public class GenericTypeSerializer implements TypeSerializer
     @Override
     public String serialize (@NotNull Object value)
     {
-        return "\"" + value.toString() + "\"";
+        return "\"" + value.toString()
+                .replace("\"", "\\\"")
+                .replace("\t", "")
+                .replace("\n", "")
+                .replace("\r", "") + "\"";
     }
 }

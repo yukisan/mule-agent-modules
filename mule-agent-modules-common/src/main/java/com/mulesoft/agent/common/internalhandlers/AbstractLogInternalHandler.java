@@ -91,11 +91,11 @@ public abstract class AbstractLogInternalHandler<T> implements InternalMessageHa
      * <p>
      * When set to true - the default, each write will be followed by a flush.
      * This will guarantee the data is written to disk but could impact performance.
-     * Default: false
+     * Default: true
      * </p>
      */
-    @Configurable(value = "false", type = Type.DYNAMIC)
-    public boolean inmediateFlush;
+    @Configurable(value = "true", type = Type.DYNAMIC)
+    public boolean immediateFlush;
 
     /**
      * <p>
@@ -249,7 +249,7 @@ public abstract class AbstractLogInternalHandler<T> implements InternalMessageHa
                     Deflater.DEFAULT_COMPRESSION + "", this.logConfiguration);
 
             this.appender = RollingRandomAccessFileAppender.createAppender(this.fileName, this.filePattern, "true",
-                    this.appenderName, this.inmediateFlush + "", this.bufferSize + "",
+                    this.appenderName, this.immediateFlush + "", this.bufferSize + "",
                     policy, strategy, layout, null, "false", null, null, this.logConfiguration);
 
             this.appender.start();

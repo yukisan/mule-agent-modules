@@ -29,12 +29,12 @@ a %i which represents an integer counter.
 |Optional
 |262144
 
-|inmediateFlush
+|immediateFlush
 |boolean
 |When set to true - the default, each write will be followed by a flush.
 This will guarantee the data is written to disk but could impact performance.
 |Optional
-|false
+|true
 
 |daysTrigger
 |int

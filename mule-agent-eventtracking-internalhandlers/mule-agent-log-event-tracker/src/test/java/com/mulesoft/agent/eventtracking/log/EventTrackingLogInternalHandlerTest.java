@@ -21,7 +21,7 @@ public class EventTrackingLogInternalHandlerTest
         handler.fileName = System.getProperty("fileName");
         handler.filePattern = System.getProperty("filePattern");
         handler.bufferSize = Integer.parseInt(System.getProperty("bufferSize"));
-        handler.inmediateFlush = Boolean.parseBoolean(System.getProperty("inmediateFlush"));
+        handler.immediateFlush = Boolean.parseBoolean(System.getProperty("immediateFlush"));
         handler.daysTrigger = Integer.parseInt(System.getProperty("daysTrigger"));
         handler.mbTrigger = Integer.parseInt(System.getProperty("mbTrigger"));
         handler.enabled = Boolean.parseBoolean(System.getProperty("enabled"));
