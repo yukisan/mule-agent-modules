@@ -22,6 +22,25 @@ public class EventTrackingLogInternalHandler extends AbstractLogInternalHandler<
 {
     /**
      * <p>
+     * The name of the file to write to.
+     * If the file, or any of its parent directories, do not exist, they will be created.
+     * </p>
+     */
+    @Configurable(value = "$MULE_HOME/logs/events.log", type = Type.DYNAMIC)
+    public String fileName;
+
+    /**
+     * <p>
+     * The pattern of the file name of the archived log file.
+     * It will accept both a date/time pattern compatible with SimpleDateFormat and/or
+     * a %i which represents an integer counter.
+     * </p>
+     */
+    @Configurable(value = "$MULE_HOME/logs/events-%d{yyyy-dd-MM}-%i.log", type = Type.DYNAMIC)
+    public String filePattern;
+
+    /**
+     * <p>
      * A log4j2 PatternLayout (https://logging.apache.org/log4j/2.x/manual/layouts.html#PatternLayout).
      * You can print the properties of the object using the %map{key} notation, for example: %map{timestamp}
      * Default: null, so all the properties will be used as a JSON object.
@@ -31,7 +50,19 @@ public class EventTrackingLogInternalHandler extends AbstractLogInternalHandler<
     public String pattern;
 
     @Override
-    protected String getPattern ()
+    protected String getFileName()
+    {
+        return this.fileName;
+    }
+
+    @Override
+    protected String getFilePattern()
+    {
+        return this.filePattern;
+    }
+
+    @Override
+    protected String getPattern()
     {
         if (StringUtils.isEmpty(this.pattern))
         {
@@ -41,13 +72,13 @@ public class EventTrackingLogInternalHandler extends AbstractLogInternalHandler<
     }
 
     @Override
-    public String getTimestampGetterName ()
+    public String getTimestampGetterName()
     {
         return "getTimestamp";
     }
 
     @Override
-    protected MapMessageBuilder getMessageBuilder ()
+    protected MapMessageBuilder getMessageBuilder()
     {
         return new MapMessageBuilder(this.getTimestampGetterName(), this.dateFormatPattern, AgentTrackingNotification.class);
     }
