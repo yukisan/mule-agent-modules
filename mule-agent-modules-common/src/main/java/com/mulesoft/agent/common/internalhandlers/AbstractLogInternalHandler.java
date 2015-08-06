@@ -8,7 +8,6 @@ import com.mulesoft.agent.configuration.Type;
 import com.mulesoft.agent.handlers.InitializableInternalMessageHandler;
 import com.mulesoft.agent.handlers.exception.InitializationException;
 import com.mulesoft.agent.services.OnOffSwitch;
-import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.Layout;
@@ -33,6 +32,7 @@ import java.util.zip.Deflater;
 
 public abstract class AbstractLogInternalHandler<T> implements InitializableInternalMessageHandler<T>
 {
+    public static String MULE_HOME_PLACEHOLDER = "$MULE_HOME";
     private final static Logger LOGGER = LoggerFactory.getLogger(AbstractLogInternalHandler.class);
 
     private String className = this.getClass().getName();
@@ -56,25 +56,6 @@ public abstract class AbstractLogInternalHandler<T> implements InitializableInte
      */
     @Configurable(value = "true", type = Type.DYNAMIC)
     public boolean enabled;
-
-    /**
-     * <p>
-     * The name of the file to write to.
-     * If the file, or any of its parent directories, do not exist, they will be created.
-     * </p>
-     */
-    @Configurable(type = Type.DYNAMIC)
-    public String fileName;
-
-    /**
-     * <p>
-     * The pattern of the file name of the archived log file.
-     * It will accept both a date/time pattern compatible with SimpleDateFormat and/or
-     * a %i which represents an integer counter.
-     * </p>
-     */
-    @Configurable(type = Type.DYNAMIC)
-    public String filePattern;
 
     /**
      * <p>
@@ -163,6 +144,10 @@ public abstract class AbstractLogInternalHandler<T> implements InitializableInte
 
     protected abstract MapMessageBuilder getMessageBuilder();
 
+    protected abstract String getFileName();
+
+    protected abstract String getFilePattern();
+
     @Override
     public boolean handle(T message)
     {
@@ -202,13 +187,6 @@ public abstract class AbstractLogInternalHandler<T> implements InitializableInte
             this.logConfiguration.removeLogger(loggerName);
         }
 
-        if (StringUtils.isEmpty(this.fileName)
-                || StringUtils.isEmpty(this.filePattern))
-        {
-            throw new InitializationException("Please review configuration; " +
-                    "you must configure the following properties: fileName and filePattern.");
-        }
-
         try
         {
             this.logContext = new LoggerContext(contextName);
@@ -225,7 +203,9 @@ public abstract class AbstractLogInternalHandler<T> implements InitializableInte
             DefaultRolloverStrategy strategy = DefaultRolloverStrategy.createStrategy("7", "1", "7",
                     Deflater.DEFAULT_COMPRESSION + "", this.logConfiguration);
 
-            this.appender = RollingRandomAccessFileAppender.createAppender(this.fileName, this.filePattern, "true",
+            String fileName = this.getFileName().replace(MULE_HOME_PLACEHOLDER, System.getProperty("mule.home"));
+            String filePattern = this.getFilePattern().replace(MULE_HOME_PLACEHOLDER, System.getProperty("mule.home"));
+            this.appender = RollingRandomAccessFileAppender.createAppender(fileName, filePattern, "true",
                     this.appenderName, this.immediateFlush + "", this.bufferSize + "",
                     policy, strategy, layout, null, "false", null, null, this.logConfiguration);
 

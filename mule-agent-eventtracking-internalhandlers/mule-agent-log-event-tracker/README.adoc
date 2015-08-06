@@ -12,16 +12,16 @@ Mule ESB flows in a configurable log file with a rolling file policy.
 |fileName
 |String
 |The name of the file to write to.
-|Required
-|
+|Optional
+|$MULE_HOME/logs/events.log
 
 |filePattern
 |String
 |The pattern of the file name of the archived log file.
 It will accept both a date/time pattern compatible with SimpleDateFormat and/or
 a %i which represents an integer counter.
-|Required
-|
+|Optional
+|$MULE_HOME/logs/events-%d{yyyy-dd-MM}-%i.log
 
 |bufferSize
 |int
