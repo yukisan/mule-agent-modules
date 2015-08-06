@@ -65,7 +65,7 @@ CREATE TABLE MULE_EVENTS (
     id CHAR(36) NOT NULL,
  	action VARCHAR(500) NULL,
  	application VARCHAR(500) NULL,
- 	mule_message VARCHAR(500) NULL,
+ 	mule_message LONGTEXT NULL,
  	mule_message_id VARCHAR(36) NULL,
  	notification_type VARCHAR(500) NULL,
  	path VARCHAR(500) NULL,
