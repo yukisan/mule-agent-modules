@@ -41,12 +41,6 @@ public class GatewayHttpEventsSplunkInternalHandler extends AbstractSplunkIntern
     }
 
     @Override
-    public String getTimestampGetterName ()
-    {
-        return "getTimestamp";
-    }
-
-    @Override
     protected MapMessageBuilder getMessageBuilder ()
     {
         return new MapMessageBuilder(this.getTimestampGetterName(), this.dateFormatPattern, HttpEvent.class);

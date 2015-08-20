@@ -1,16 +1,14 @@
 package com.mulesoft.agent.gw.http.splunk;
 
 import com.mulesoft.agent.AgentEnableOperationException;
-import com.mulesoft.agent.domain.tracking.AgentTrackingNotification;
+import com.mulesoft.agent.handlers.exception.InitializationException;
 import com.mulesoft.module.client.model.HttpEvent;
 import junit.framework.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Ignore
@@ -19,7 +17,7 @@ public class GatewayHttpEventsSplunkInternalHandlerTest
 
     @Test
     public void test ()
-            throws IOException, AgentEnableOperationException
+            throws IOException, AgentEnableOperationException, InitializationException
     {
         GatewayHttpEventsSplunkInternalHandler handler = new GatewayHttpEventsSplunkInternalHandler();
         handler.setEnabled(true);
@@ -35,6 +33,7 @@ public class GatewayHttpEventsSplunkInternalHandlerTest
         handler.dateFormatPattern = System.getProperty("dateFormatPattern");
 
         handler.postConfigurable();
+        handler.initialize();
 
         boolean success = true;
         for (HttpEvent notification : createNotifications())
