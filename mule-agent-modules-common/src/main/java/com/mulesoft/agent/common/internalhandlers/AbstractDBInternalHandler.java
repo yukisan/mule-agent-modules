@@ -2,6 +2,7 @@ package com.mulesoft.agent.common.internalhandlers;
 
 import com.mulesoft.agent.buffer.BufferedHandler;
 import com.mulesoft.agent.configuration.Configurable;
+import com.mulesoft.agent.configuration.Password;
 import com.mulesoft.agent.handlers.exception.InitializationException;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -45,6 +46,7 @@ public abstract class AbstractDBInternalHandler<T> extends BufferedHandler<T>
      * Password for the database user.
      * </p>
      */
+    @Password
     @Configurable
     public String pass;
 

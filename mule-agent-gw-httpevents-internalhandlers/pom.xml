@@ -1,25 +1,29 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
-        <artifactId>mule-agent-modules</artifactId>
-        <groupId>com.mulesoft.agent</groupId>
-        <version>1.2.0-SNAPSHOT</version>
-    </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>mule-agent-eventtracking-internalhandlers</artifactId>
+    <parent>
+        <groupId>com.mulesoft.agent</groupId>
+        <artifactId>mule-agent-modules</artifactId>
+        <version>1.2.0-SNAPSHOT</version>
+    </parent>
+
     <packaging>pom</packaging>
 
-    <name>Mule Agent :: Modules :: Event Tracking</name>
+    <name>Mule Agent :: Modules :: GW Http Event</name>
     <url>http://maven.apache.org</url>
+    <artifactId>mule-agent-gw-httpevents-internalhandlers</artifactId>
+
     <modules>
-        <module>mule-agent-db-event-tracker</module>
-        <module>mule-agent-splunk-event-tracker</module>
-        <module>mule-agent-log-event-tracker</module>
+        <module>mule-agent-splunk-gw-http-tracker</module>
+        <module>mule-agent-log-gw-http-tracker</module>
     </modules>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <gw.version>2.1.0-SNAPSHOT</gw.version>
     </properties>
 
     <dependencies>
@@ -51,6 +55,30 @@
             <artifactId>commons-logging</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+        </dependency>
+
+        <!-- GW Dependencies -->
+        <dependency>
+            <groupId>com.mulesoft.anypoint</groupId>
+            <artifactId>api-gateway-client</artifactId>
+            <version>${gw.version}</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
         <!-- Test Dependencies -->
         <dependency>
             <groupId>junit</groupId>
@@ -65,4 +93,5 @@
             <artifactId>validation-api</artifactId>
         </dependency>
     </dependencies>
+    
 </project>

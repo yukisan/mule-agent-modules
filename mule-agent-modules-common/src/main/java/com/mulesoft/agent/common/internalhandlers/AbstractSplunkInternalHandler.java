@@ -2,8 +2,8 @@ package com.mulesoft.agent.common.internalhandlers;
 
 import com.mulesoft.agent.buffer.BufferedHandler;
 import com.mulesoft.agent.common.builders.MapMessageBuilder;
-import com.mulesoft.agent.configuration.Configurable;
-import com.mulesoft.agent.configuration.Type;
+import com.mulesoft.agent.configuration.*;
+import com.mulesoft.agent.configuration.Password;
 import com.mulesoft.agent.handlers.exception.InitializationException;
 import com.splunk.*;
 import org.apache.commons.lang.StringUtils;
@@ -55,6 +55,7 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
      * The password of the user to connect to Splunk.
      * </p>
      */
+    @Password
     @Configurable(type = Type.DYNAMIC)
     public String pass;
 
