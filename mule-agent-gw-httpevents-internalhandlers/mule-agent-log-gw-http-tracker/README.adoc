@@ -13,7 +13,7 @@ Mule API Gateway in a configurable log file with a rolling file policy.
 |String
 |The name of the file to write to.
 |Optional
-|$MULE_HOME/logs/events.log
+|$MULE_HOME/logs/gw-http-events.log
 
 |filePattern
 |String
@@ -21,7 +21,7 @@ Mule API Gateway in a configurable log file with a rolling file policy.
 It will accept both a date/time pattern compatible with SimpleDateFormat and/or
 a %i which represents an integer counter.
 |Optional
-|$MULE_HOME/logs/events-%d{yyyy-dd-MM}-%i.log
+|$MULE_HOME/logs/gw-http-events-%d{yyyy-dd-MM}-%i.log
 
 |bufferSize
 |int
@@ -70,7 +70,5 @@ _[small]#so all the properties will be used as a JSON object#_
 .Log Internal Handler Configuration
 ....
 ---
-  mule.agent.tracking.handler.log:
-  	fileName: /var/logs/gw-http-events.log
-  	filePattern: /var/logs/gw-http-events-%d{yyyy-dd-MM}-%i.log
+  mule.agent.gw.http.handler.log:
 ....

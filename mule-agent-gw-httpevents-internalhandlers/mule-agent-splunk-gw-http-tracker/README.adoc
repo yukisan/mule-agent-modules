@@ -85,7 +85,7 @@ _[small]#so all the properties will be used as a JSON object#_
 .Splunk Internal Handler minimum Configuration
 ....
 ---
-  mule.agent.tracking.handler.splunk:
+  mule.agent.gw.http.handler.splunk:
     host: 192.168.61.131
     user: admin
     pass: test

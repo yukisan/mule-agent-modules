@@ -1,6 +1,7 @@
 package com.mulesoft.agent.gw.http.log;
 
 import com.mulesoft.agent.AgentEnableOperationException;
+import com.mulesoft.agent.handlers.exception.InitializationException;
 import com.mulesoft.module.client.model.HttpEvent;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -13,7 +14,7 @@ public class GatewayHttpEventsLogInternalHandlerTest
 {
     @Test
     public void test ()
-            throws AgentEnableOperationException
+            throws AgentEnableOperationException, InitializationException
     {
         GatewayHttpEventsLogInternalHandler handler = new GatewayHttpEventsLogInternalHandler();
         handler.pattern = System.getProperty("pattern");
@@ -26,6 +27,7 @@ public class GatewayHttpEventsLogInternalHandlerTest
         handler.enabled = Boolean.parseBoolean(System.getProperty("enabled"));
         handler.dateFormatPattern = System.getProperty("dateFormatPattern");
         handler.postConfigurable();
+        handler.initialize();
 
         for (HttpEvent notification : createNotifications())
         {

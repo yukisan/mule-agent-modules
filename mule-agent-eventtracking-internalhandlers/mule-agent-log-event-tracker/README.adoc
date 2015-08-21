@@ -71,6 +71,4 @@ _[small]#so all the properties will be used as a JSON object#_
 ....
 ---
   mule.agent.tracking.handler.log:
-  	fileName: /var/logs/mule-tracking.log
-  	filePattern: /var/logs/mule-tracking-%d{yyyy-dd-MM}-%i.log
 ....
