@@ -33,6 +33,7 @@
         <dependency>
             <groupId>com.splunk</groupId>
             <artifactId>splunk</artifactId>
+            <scope>compile</scope>
         </dependency>
 
         <!-- Test Dependencies -->
