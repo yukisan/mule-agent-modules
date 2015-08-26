@@ -24,7 +24,8 @@ public class DateTypeSerializer implements TypeSerializer
         catch (Exception e)
         {
             LOGGER.error(String.format("There was an error using the dateFormatPattern " +
-                    "you provided: %s. Please review the configuration.", dateFormatPattern), e);
+                    "you provided: %s. Please review the configuration.", dateFormatPattern));
+            LOGGER.debug(e.getMessage(), e);
             this.dateFormat = null;
         }
     }

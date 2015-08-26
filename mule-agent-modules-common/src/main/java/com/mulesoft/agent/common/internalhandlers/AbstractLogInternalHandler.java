@@ -51,10 +51,10 @@ public abstract class AbstractLogInternalHandler<T> implements InitializableInte
     /**
      * <p>
      * Flag to identify if the Internal Handler is enabled or not.
-     * Default: true
+     * Default: false
      * </p>
      */
-    @Configurable(value = "true", type = Type.DYNAMIC)
+    @Configurable(value = "false")
     public boolean enabled;
 
     /**
@@ -171,7 +171,10 @@ public abstract class AbstractLogInternalHandler<T> implements InitializableInte
     @PostConfigure
     public void postConfigurable()
     {
-        this.enabledSwitch = OnOffSwitch.newNullSwitch(this.enabled);
+        if (this.enabledSwitch == null)
+        {
+            this.enabledSwitch = OnOffSwitch.newNullSwitch(this.enabled);
+        }
     }
 
     @Override
