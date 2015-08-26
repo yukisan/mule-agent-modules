@@ -1,10 +1,12 @@
 package com.mulesoft.agent.common.internalhandlers;
 
+import com.mulesoft.agent.AgentEnableOperationException;
 import com.mulesoft.agent.buffer.BufferedHandler;
 import com.mulesoft.agent.common.builders.MapMessageBuilder;
 import com.mulesoft.agent.configuration.*;
 import com.mulesoft.agent.configuration.Password;
 import com.mulesoft.agent.handlers.exception.InitializationException;
+import com.mulesoft.agent.services.OnOffSwitch;
 import com.splunk.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.Level;
@@ -34,6 +36,15 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
     private Layout<? extends Serializable> layout;
     private LogEventFactory factory = new DefaultLogEventFactory();
     private String className = this.getClass().getName();
+
+    /**
+     * <p>
+     * Flag to identify if the Internal Handler is enabled or not.
+     * Default: false
+     * </p>
+     */
+    @Configurable("false")
+    protected boolean enabled;
 
     /**
      * http://dev.splunk.com/view/java-sdk/SP-CAAAECX
@@ -227,6 +238,14 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
         {
             LOGGER.error("There was an error closing the communication to the Splunk instance.", e);
             return false;
+        }
+    }
+
+    public void postConfigurable() throws AgentEnableOperationException
+    {
+        if (this.enabledSwitch == null)
+        {
+            this.enabledSwitch = OnOffSwitch.newNullSwitch(this.enabled);
         }
     }
 

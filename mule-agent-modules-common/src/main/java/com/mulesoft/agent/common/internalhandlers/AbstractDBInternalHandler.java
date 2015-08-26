@@ -1,9 +1,11 @@
 package com.mulesoft.agent.common.internalhandlers;
 
+import com.mulesoft.agent.AgentEnableOperationException;
 import com.mulesoft.agent.buffer.BufferedHandler;
 import com.mulesoft.agent.configuration.Configurable;
 import com.mulesoft.agent.configuration.Password;
 import com.mulesoft.agent.handlers.exception.InitializationException;
+import com.mulesoft.agent.services.OnOffSwitch;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +18,15 @@ import java.util.Collection;
 public abstract class AbstractDBInternalHandler<T> extends BufferedHandler<T>
 {
     private final static Logger LOGGER = LoggerFactory.getLogger(AbstractDBInternalHandler.class);
+
+    /**
+     * <p>
+     * Flag to identify if the Internal Handler is enabled or not.
+     * Default: false
+     * </p>
+     */
+    @Configurable("false")
+    protected boolean enabled;
 
     /**
      * <p>
@@ -107,6 +118,14 @@ public abstract class AbstractDBInternalHandler<T> extends BufferedHandler<T>
                     LOGGER.error("Error closing the database.", e);
                 }
             }
+        }
+    }
+
+    public void postConfigurable() throws AgentEnableOperationException
+    {
+        if (this.enabledSwitch == null)
+        {
+            this.enabledSwitch = OnOffSwitch.newNullSwitch(this.enabled);
         }
     }
 
