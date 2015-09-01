@@ -1,13 +1,24 @@
 package com.mulesoft.agent.common.internalhandlers;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.Serializable;
+import java.net.Socket;
+import java.util.Collection;
+import java.util.Map;
+
 import com.mulesoft.agent.AgentEnableOperationException;
+import com.mulesoft.agent.buffer.BufferConfiguration;
+import com.mulesoft.agent.buffer.BufferType;
 import com.mulesoft.agent.buffer.BufferedHandler;
 import com.mulesoft.agent.common.builders.MapMessageBuilder;
-import com.mulesoft.agent.configuration.*;
+import com.mulesoft.agent.configuration.Configurable;
 import com.mulesoft.agent.configuration.Password;
+import com.mulesoft.agent.configuration.Type;
 import com.mulesoft.agent.handlers.exception.InitializationException;
 import com.mulesoft.agent.services.OnOffSwitch;
 import com.splunk.*;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.Layout;
@@ -18,13 +29,6 @@ import org.apache.logging.log4j.core.layout.PatternLayout;
 import org.apache.logging.log4j.message.MapMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.Serializable;
-import java.net.Socket;
-import java.util.Collection;
-import java.util.Map;
 
 public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T>
 {
@@ -252,7 +256,6 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
     @Override
     public void initialize() throws InitializationException
     {
-        super.initialize();
         LOGGER.debug("Configuring the Common Splunk Internal Handler...");
         this.layout = null;
 
@@ -323,5 +326,20 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
         }
 
         LOGGER.debug("Successfully configured the Common Splunk Internal Handler.");
+        super.initialize();
+    }
+
+    @Override
+    public BufferConfiguration getBuffer() {
+        if (buffer != null) {
+            return buffer;
+        } else {
+            BufferConfiguration defaultBuffer = new BufferConfiguration();
+            defaultBuffer.setType(BufferType.MEMORY);
+            defaultBuffer.setRetryCount(1);
+            defaultBuffer.setFlushFrequency(10000l);
+            defaultBuffer.setMaximumCapacity(5000);
+            return defaultBuffer;
+        }
     }
 }
