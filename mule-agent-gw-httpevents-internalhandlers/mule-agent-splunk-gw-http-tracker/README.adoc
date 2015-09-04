@@ -3,6 +3,24 @@
 The Splunk Internal handler will store all the HTTP Events Notifications produced from the
 Mule API Gateway in a Splunk instance.
 
+== Splunk Instance Configuration
+
+In order to achieve this you must configure a new source type on your Splunk instance that will have the correct configuration
+to parse the Http Events sent from the Mule API Gateway.
+To do this you have to append to $SPLUNK_HOME/opt/splunk/etc/system/local/props.conf
+file the following source type (create the file if it doesn't exists), and restart the Splunk instance:
+
+....
+[mule]
+TRUNCATE = 0
+LINE_BREAKER = ([\r\n]+)
+SHOULD_LINEMERGE = false
+INDEXED_EXTRACTIONS = JSON
+KV_MODE = JSON
+category = Mule Splunk Integration
+description = Mule Agent event information
+....
+
 === Configurable Fields
 
 |===
