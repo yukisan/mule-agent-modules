@@ -2,12 +2,12 @@
     <parent>
         <artifactId>mule-agent-common</artifactId>
         <groupId>com.mulesoft.agent</groupId>
-        <version>1.2.0-SNAPSHOT</version>
+        <version>1.2.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>mule-agent-modules</artifactId>
-  <version>1.2.1-SNAPSHOT</version>
+    <version>1.2.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>Mule Agent :: Modules</name>
