@@ -3,10 +3,11 @@
     <parent>
         <artifactId>mule-agent-common</artifactId>
         <groupId>com.mulesoft.agent</groupId>
-        <version>1.2.0-SNAPSHOT</version>
+        <version>1.2.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
+    <version>1.2.0-SNAPSHOT</version>
     <artifactId>mule-agent-modules</artifactId>
     <packaging>pom</packaging>
 
@@ -130,6 +131,11 @@
         <repository>
             <id>ext-release-local</id>
             <url>http://splunk.artifactoryonline.com/splunk/ext-releases-local</url>
+        </repository>
+        <repository>
+            <id>mule-ee-releases</id>
+            <name>ci snapshots</name>
+            <url>https://repository-master.mulesoft.org/nexus/content/repositories/releases-ee</url>
         </repository>
     </repositories>
 </project>
