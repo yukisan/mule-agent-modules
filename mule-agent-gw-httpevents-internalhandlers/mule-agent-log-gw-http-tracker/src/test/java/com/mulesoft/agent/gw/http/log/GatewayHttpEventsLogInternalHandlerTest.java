@@ -17,7 +17,6 @@ public class GatewayHttpEventsLogInternalHandlerTest
             throws AgentEnableOperationException, InitializationException
     {
         GatewayHttpEventsLogInternalHandler handler = new GatewayHttpEventsLogInternalHandler();
-        handler.pattern = System.getProperty("pattern");
         handler.fileName = System.getProperty("fileName");
         handler.filePattern = System.getProperty("filePattern");
         handler.bufferSize = Integer.parseInt(System.getProperty("bufferSize"));
