@@ -1,7 +1,8 @@
 package com.mulesoft.agent.common.internalhandlers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mulesoft.agent.AgentEnableOperationException;
-import com.mulesoft.agent.common.builders.MapMessageBuilder;
+import com.mulesoft.agent.common.serializer.DefaultObjectMapperFactory;
 import com.mulesoft.agent.configuration.Configurable;
 import com.mulesoft.agent.configuration.PostConfigure;
 import com.mulesoft.agent.configuration.Type;
@@ -21,29 +22,28 @@ import org.apache.logging.log4j.core.config.AppenderRef;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.apache.logging.log4j.core.layout.PatternLayout;
-import org.apache.logging.log4j.message.MapMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.Deflater;
 
 public abstract class AbstractLogInternalHandler<T> implements InitializableInternalMessageHandler<T>
 {
-    public static String MULE_HOME_PLACEHOLDER = "$MULE_HOME";
     private final static Logger LOGGER = LoggerFactory.getLogger(AbstractLogInternalHandler.class);
+    public static String MULE_HOME_PLACEHOLDER = "$MULE_HOME";
+    public static String PATTERN_LAYOUT = "%m%n";
 
     private String className = this.getClass().getName();
     private String loggerName = className + "." + "logger";
     private String appenderName = className + "." + "appender";
     private String contextName = className + "." + "context";
-    private MapMessageBuilder messageBuilder;
     private Configuration logConfiguration;
     private LoggerConfig loggerConfig;
     private Appender appender;
     private LoggerContext logContext;
+    private ObjectMapper objectMapper;
 
     protected org.apache.logging.log4j.core.Logger internalLogger;
     protected OnOffSwitch enabledSwitch;
@@ -103,32 +103,13 @@ public abstract class AbstractLogInternalHandler<T> implements InitializableInte
     @Configurable(value = "yyyy-MM-dd'T'HH:mm:ss.SZ", type = Type.DYNAMIC)
     public String dateFormatPattern;
 
+    protected abstract String getFileName();
 
-    private MapMessage createMapMessage(T message)
-    {
-        MapMessage mapMessage = this.messageBuilder.build(message);
-        // Append additional properties
-        Map<String, String> augmentation = augmentMapMessage(message);
-        if (augmentation != null && !augmentation.isEmpty())
-        {
-            mapMessage.putAll(augmentation);
-        }
-        return mapMessage;
-    }
+    protected abstract String getFilePattern();
 
-    protected String getTimestampGetterName()
+    protected ObjectMapper getObjectMapper()
     {
-        return null;
-    }
-
-    protected String getPattern()
-    {
-        return this.messageBuilder.getDefaultPattern();
-    }
-
-    protected Map<String, String> augmentMapMessage(T message)
-    {
-        return null;
+        return this.objectMapper;
     }
 
     public void enable(boolean state)
@@ -142,12 +123,6 @@ public abstract class AbstractLogInternalHandler<T> implements InitializableInte
         return this.enabledSwitch.isEnabled();
     }
 
-    protected abstract MapMessageBuilder getMessageBuilder();
-
-    protected abstract String getFileName();
-
-    protected abstract String getFilePattern();
-
     @Override
     public boolean handle(T message)
     {
@@ -155,8 +130,9 @@ public abstract class AbstractLogInternalHandler<T> implements InitializableInte
         {
             try
             {
-                MapMessage mapMessage = createMapMessage(message);
-                this.internalLogger.info(mapMessage);
+                String serialized = this.objectMapper.writeValueAsString(message);
+
+                this.internalLogger.info(serialized);
                 return true;
             }
             catch (Exception e)
@@ -195,9 +171,7 @@ public abstract class AbstractLogInternalHandler<T> implements InitializableInte
             this.logContext = new LoggerContext(contextName);
             this.logConfiguration = logContext.getConfiguration();
 
-            this.messageBuilder = getMessageBuilder();
-
-            Layout<? extends Serializable> layout = PatternLayout.createLayout(this.getPattern(), null, null, null, true, true, null, null);
+            Layout<? extends Serializable> layout = PatternLayout.createLayout(PATTERN_LAYOUT, null, null, null, true, true, null, null);
             String dayTrigger = TimeUnit.DAYS.toMillis(this.daysTrigger) + "";
             String sizeTrigger = (this.mbTrigger * 1024 * 1024) + "";
             TimeBasedTriggeringPolicy timeBasedTriggeringPolicy = TimeBasedTriggeringPolicy.createPolicy(dayTrigger, "true");
@@ -225,6 +199,8 @@ public abstract class AbstractLogInternalHandler<T> implements InitializableInte
         {
             throw new InitializationException("There was an error configuring the AbstractLogInternalHandler internal handler.", e);
         }
+
+        this.objectMapper = new DefaultObjectMapperFactory(this.dateFormatPattern).create();
 
         LOGGER.debug("Successfully configured the Common Log Internal Handler.");
     }

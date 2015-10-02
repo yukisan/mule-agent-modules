@@ -17,7 +17,6 @@ public class EventTrackingLogInternalHandlerTest
             throws AgentEnableOperationException
     {
         EventTrackingLogInternalHandler handler = new EventTrackingLogInternalHandler();
-        handler.pattern = System.getProperty("pattern");
         handler.fileName = System.getProperty("fileName");
         handler.filePattern = System.getProperty("filePattern");
         handler.bufferSize = Integer.parseInt(System.getProperty("bufferSize"));

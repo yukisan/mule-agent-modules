@@ -1,45 +1,34 @@
 package com.mulesoft.agent.common.internalhandlers;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.Serializable;
-import java.net.Socket;
-import java.util.Collection;
-import java.util.Map;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mulesoft.agent.AgentEnableOperationException;
 import com.mulesoft.agent.buffer.BufferConfiguration;
 import com.mulesoft.agent.buffer.BufferType;
 import com.mulesoft.agent.buffer.BufferedHandler;
-import com.mulesoft.agent.common.builders.MapMessageBuilder;
+import com.mulesoft.agent.common.serializer.DefaultObjectMapperFactory;
 import com.mulesoft.agent.configuration.Configurable;
 import com.mulesoft.agent.configuration.Password;
 import com.mulesoft.agent.configuration.Type;
 import com.mulesoft.agent.handlers.exception.InitializationException;
 import com.mulesoft.agent.services.OnOffSwitch;
 import com.splunk.*;
-
 import org.apache.commons.lang.StringUtils;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.core.Layout;
-import org.apache.logging.log4j.core.LogEvent;
-import org.apache.logging.log4j.core.impl.DefaultLogEventFactory;
-import org.apache.logging.log4j.core.impl.LogEventFactory;
-import org.apache.logging.log4j.core.layout.PatternLayout;
-import org.apache.logging.log4j.message.MapMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.Socket;
+import java.util.Collection;
 
 public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T>
 {
     private final static Logger LOGGER = LoggerFactory.getLogger(AbstractSplunkInternalHandler.class);
+    private final static String LINE_BREAKER = "\r\n";
 
     private Service service;
     private Index index;
-    private MapMessageBuilder messageBuilder;
-    private Layout<? extends Serializable> layout;
-    private LogEventFactory factory = new DefaultLogEventFactory();
-    private String className = this.getClass().getName();
+    private ObjectMapper objectMapper;
 
     /**
      * <p>
@@ -146,36 +135,6 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
     @Configurable(value = "yyyy-MM-dd'T'HH:mm:ss.SZ", type = Type.DYNAMIC)
     public String dateFormatPattern;
 
-
-    private MapMessage createMapMessage(T message)
-    {
-        MapMessage mapMessage = this.messageBuilder.build(message);
-        // Append additional properties
-        Map<String, String> augmentation = augmentMapMessage(message);
-        if (augmentation != null && !augmentation.isEmpty())
-        {
-            mapMessage.putAll(augmentation);
-        }
-        return mapMessage;
-    }
-
-    protected Map<String, String> augmentMapMessage(T message)
-    {
-        return null;
-    }
-
-    protected String getPattern()
-    {
-        return this.messageBuilder.getDefaultPattern();
-    }
-
-    protected String getTimestampGetterName()
-    {
-        return null;
-    }
-
-    protected abstract MapMessageBuilder getMessageBuilder();
-
     @Override
     protected boolean canHandle(T message)
     {
@@ -212,9 +171,8 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
                 output = socket.getOutputStream();
                 for (T message : messages)
                 {
-                    MapMessage mapMessage = createMapMessage(message);
-                    LogEvent event = factory.createEvent(className, null, className, Level.INFO, mapMessage, null, null);
-                    output.write(layout.toByteArray(event));
+                    String serialized = this.objectMapper.writeValueAsString(message) + LINE_BREAKER;
+                    output.write(serialized.getBytes("UTF-8"));
                 }
                 output.flush();
                 this.lastConnection = System.currentTimeMillis();
@@ -245,6 +203,11 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
         }
     }
 
+    protected ObjectMapper getObjectMapper()
+    {
+        return this.objectMapper;
+    }
+
     public void postConfigurable() throws AgentEnableOperationException
     {
         if (this.enabledSwitch == null)
@@ -257,7 +220,6 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
     public void initialize() throws InitializationException
     {
         LOGGER.debug("Configuring the Common Splunk Internal Handler...");
-        this.layout = null;
 
         if (StringUtils.isEmpty(this.host)
                 || StringUtils.isEmpty(this.user)
@@ -314,26 +276,21 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
             throw new InitializationException("There was an error obtaining the Splunk index.", e);
         }
 
-        this.messageBuilder = getMessageBuilder();
-
-        try
-        {
-            this.layout = PatternLayout.createLayout(this.getPattern(), null, null, null, true, true, null, null);
-        }
-        catch (Exception e)
-        {
-            throw new InitializationException("There was an error creating the pattern.", e);
-        }
+        this.objectMapper = new DefaultObjectMapperFactory(this.dateFormatPattern).create();
 
         LOGGER.debug("Successfully configured the Common Splunk Internal Handler.");
         super.initialize();
     }
 
     @Override
-    public BufferConfiguration getBuffer() {
-        if (buffer != null) {
+    public BufferConfiguration getBuffer()
+    {
+        if (buffer != null)
+        {
             return buffer;
-        } else {
+        }
+        else
+        {
             BufferConfiguration defaultBuffer = new BufferConfiguration();
             defaultBuffer.setType(BufferType.MEMORY);
             defaultBuffer.setRetryCount(1);

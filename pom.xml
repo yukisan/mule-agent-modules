@@ -46,6 +46,7 @@
         <spring.version>3.2.10.RELEASE</spring.version>
         <javax.validation.version>1.0.0.GA</javax.validation.version>
         <slfj4.version>1.6.1</slfj4.version>
+        <jackson.version>2.3.2</jackson.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -140,6 +141,19 @@
                 <groupId>com.amazonaws</groupId>
                 <artifactId>aws-java-sdk</artifactId>
                 <version>${aws.sdk.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-annotations</artifactId>
+                <version>${jackson.version}</version>
+                <scope>provided</scope>
             </dependency>
 
             <!-- Logging dependencies -->
