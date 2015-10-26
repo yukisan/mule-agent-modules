@@ -1,7 +1,7 @@
 package com.mulesoft.agent.eventtracking.db;
 
 import com.fasterxml.uuid.Generators;
-import com.mulesoft.agent.common.internalhandlers.AbstractDBInternalHandler;
+import com.mulesoft.agent.common.internalhandler.AbstractDBInternalHandler;
 import com.mulesoft.agent.configuration.Configurable;
 import com.mulesoft.agent.domain.tracking.AgentTrackingNotification;
 import org.slf4j.Logger;

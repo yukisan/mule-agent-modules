@@ -1,4 +1,4 @@
-package com.mulesoft.agent.common.serializer;
+package com.mulesoft.agent.common.internalhandler.serializer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 

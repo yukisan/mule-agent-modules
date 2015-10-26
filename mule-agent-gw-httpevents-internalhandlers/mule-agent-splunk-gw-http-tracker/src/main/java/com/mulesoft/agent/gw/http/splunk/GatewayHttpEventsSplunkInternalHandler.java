@@ -1,6 +1,6 @@
 package com.mulesoft.agent.gw.http.splunk;
 
-import com.mulesoft.agent.common.internalhandlers.AbstractSplunkInternalHandler;
+import com.mulesoft.agent.common.internalhandler.AbstractSplunkInternalHandler;
 import com.mulesoft.module.client.model.HttpEvent;
 
 import javax.inject.Named;
