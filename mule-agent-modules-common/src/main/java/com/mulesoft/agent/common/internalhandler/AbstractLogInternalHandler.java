@@ -1,8 +1,8 @@
-package com.mulesoft.agent.common.internalhandlers;
+package com.mulesoft.agent.common.internalhandler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mulesoft.agent.AgentEnableOperationException;
-import com.mulesoft.agent.common.serializer.DefaultObjectMapperFactory;
+import com.mulesoft.agent.common.internalhandler.serializer.DefaultObjectMapperFactory;
 import com.mulesoft.agent.configuration.Configurable;
 import com.mulesoft.agent.configuration.PostConfigure;
 import com.mulesoft.agent.configuration.Type;
