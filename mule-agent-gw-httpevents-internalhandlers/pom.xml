@@ -15,6 +15,7 @@
     <artifactId>mule-agent-gw-httpevents-internalhandlers</artifactId>
 
     <modules>
+        <module>mule-agent-db-gw-http-tracker</module>
         <module>mule-agent-splunk-gw-http-tracker</module>
         <module>mule-agent-log-gw-http-tracker</module>
     </modules>

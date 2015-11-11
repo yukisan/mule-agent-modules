@@ -2,11 +2,10 @@
 
 The DB Internal handler will store all the Event Notifications produced from the
 Mule ESB flows in a configurable database.
-You have to copy your JDBC .jar driver to the {MULE_HOME}/plugins/mule-agent-plugin/lib,
+You have to copy your JDBC .jar driver to the ${MULE_HOME}/plugins/mule-agent-plugin/lib/modules,
 so the mule agent can load it to the classpath.
 
-=== Configurable Fields
-
+== Configurable Fields
 
 |===
 |Field|Data Type|Description|Type|Default Value
@@ -55,9 +54,13 @@ so the mule agent can load it to the classpath.
 
 |===
 
-=== Proposed Table Schema to Store the Events
+== Proposed Configurations
 
-As an example we show the configuration for storing the events on a MySQL database.
+=== MySQL
+
+==== Schema
+
+Proposed schema for event storage in MySQL
 
 [source,sql]
 ....
@@ -70,7 +73,7 @@ CREATE TABLE MULE_EVENTS (
  	notification_type VARCHAR(500) NULL,
  	path VARCHAR(500) NULL,
  	resource_identifier VARCHAR(500) NULL,
- 	timestamp BIGINT NULL,
+ 	timestamp BIGINT NOT NULL,
  	source TEXT NULL,
  	PRIMARY KEY (id)
 );
@@ -83,7 +86,7 @@ CREATE TABLE MULE_EVENTS_ANNOTATIONS (
   PRIMARY KEY (id),
   KEY FK_MULE_EVENTS_ANNOTATIONS_MULE_EVENTS_IDX (event_id),
   CONSTRAINT FK_MULE_EVENTS_ANNOTATIONS_MULE_EVENTS
-  FOREIGN KEY (event_id) REFERENCES MULE_EVENTS (id) ON DELETE NO ACTION ON UPDATE NO ACTION
+  FOREIGN KEY (event_id) REFERENCES MULE_EVENTS (id) ON DELETE CASCADE
 );
 
 CREATE TABLE MULE_EVENTS_BUSINESS (
@@ -94,15 +97,17 @@ CREATE TABLE MULE_EVENTS_BUSINESS (
   PRIMARY KEY (id),
   KEY FK_MULE_EVENTS_BUSINESS_IDX (event_id),
   CONSTRAINT FK_MULE_EVENTS_BUSINESS_MULE_EVENTS
-  FOREIGN KEY (event_id) REFERENCES MULE_EVENTS (id) ON DELETE NO ACTION ON UPDATE NO ACTION
+  FOREIGN KEY (event_id) REFERENCES MULE_EVENTS (id) ON DELETE CASCADE
 );
 
 ....
 
-=== Configuration Example for MySQL
+==== Internal Handler Configuration
+
+First of all you have to download the MySQL JDBC driver from http://dev.mysql.com/downloads/connector/j/.
+Download the .zip file and extract to obtain the mysql-connector-java-_VERSION_-bin.jar, and copy it to ${MULE_HOME}/plugins/mule-agent-plugin/lib/modules.
 
 [source,yaml]
-.DB Internal Handler Configuration
 ....
 ---
   mule.agent.tracking.handler.database:
@@ -111,3 +116,130 @@ CREATE TABLE MULE_EVENTS_BUSINESS (
     user: root
     pass: test
 ....
+
+
+=== ORACLE
+
+==== Schema
+
+Proposed schema for event storage in Oracle 11g XE
+
+[source,sql]
+....
+CREATE TABLE MULE_EVENTS (
+    id CHAR(36) NOT NULL,
+ 	action VARCHAR(500) NULL,
+ 	application VARCHAR(500) NULL,
+ 	mule_message CLOB NULL,
+ 	mule_message_id VARCHAR(36) NULL,
+ 	notification_type VARCHAR(500) NULL,
+ 	path VARCHAR(500) NULL,
+ 	resource_identifier VARCHAR(500) NULL,
+ 	timestamp NUMBER NOT NULL,
+ 	source CLOB NULL,
+ 	PRIMARY KEY (id)
+);
+
+CREATE TABLE MULE_EVENTS_ANNOTATIONS (
+  id CHAR(36) NOT NULL,
+  event_id CHAR(36) NOT NULL,
+  annotation_type VARCHAR(100) NULL,
+  annotation_value VARCHAR(255) NULL,
+  PRIMARY KEY (id),
+  CONSTRAINT FK_MEA_ME
+  FOREIGN KEY (event_id) REFERENCES MULE_EVENTS (id) ON DELETE CASCADE
+);
+
+CREATE INDEX FK_MAE_IDX ON MULE_EVENTS_ANNOTATIONS(event_id);
+
+CREATE TABLE MULE_EVENTS_BUSINESS (
+  id CHAR(36) NOT NULL,
+  event_id CHAR(36) NOT NULL,
+  business_key VARCHAR(30) NOT NULL,
+  business_value VARCHAR(255) NULL,
+  PRIMARY KEY (id),
+  CONSTRAINT FK_MEB_ME
+  FOREIGN KEY (event_id) REFERENCES MULE_EVENTS (id) ON DELETE CASCADE
+);
+
+CREATE INDEX FK_MEB_IDX ON MULE_EVENTS_BUSINESS(event_id);
+....
+
+==== Internal Handler Configuration
+
+First of all you have to download the ORACLE JDBC driver from http://www.oracle.com/technetwork/database/features/jdbc/index-091264.html.
+Download the .jar file and copy it to ${MULE_HOME}/plugins/mule-agent-plugin/lib/modules.
+
+[source,yaml]
+....
+---
+  mule.agent.tracking.handler.database:
+    driver: oracle.jdbc.OracleDriver
+    jdbcUrl: jdbc:oracle:thin:@192.168.61.128/XE
+    user: root
+    pass: test
+....
+
+
+=== Microsoft SQL Server
+
+==== Schema
+
+Proposed schema for event storage in Microsoft SQL Server 2014
+
+[source,sql]
+....
+CREATE TABLE MULE_EVENTS (
+    id CHAR(36) NOT NULL,
+ 	action VARCHAR(500) NULL,
+ 	application VARCHAR(500) NULL,
+ 	mule_message VARCHAR(MAX) NULL,
+ 	mule_message_id VARCHAR(36) NULL,
+ 	notification_type VARCHAR(500) NULL,
+ 	path VARCHAR(500) NULL,
+ 	resource_identifier VARCHAR(500) NULL,
+ 	timestamp BIGINT NOT NULL,
+ 	source VARCHAR(MAX) NULL,
+ 	PRIMARY KEY (id)
+);
+
+CREATE TABLE MULE_EVENTS_ANNOTATIONS (
+  id CHAR(36) NOT NULL,
+  event_id CHAR(36) NOT NULL,
+  annotation_type VARCHAR(100) NULL,
+  annotation_value VARCHAR(255) NULL,
+  PRIMARY KEY (id),
+  INDEX FK_MULE_EVENTS_ANNOTATIONS_MULE_EVENTS_IDX (event_id),
+  CONSTRAINT FK_MULE_EVENTS_ANNOTATIONS_MULE_EVENTS
+  FOREIGN KEY (event_id) REFERENCES MULE_EVENTS (id) ON DELETE CASCADE
+);
+
+CREATE TABLE MULE_EVENTS_BUSINESS (
+  id CHAR(36) NOT NULL,
+  event_id CHAR(36) NOT NULL,
+  business_key VARCHAR(30) NOT NULL,
+  business_value VARCHAR(255) NULL,
+  PRIMARY KEY (id),
+  INDEX FK_MULE_EVENTS_BUSINESS_IDX (event_id),
+  CONSTRAINT FK_MULE_EVENTS_BUSINESS_MULE_EVENTS
+  FOREIGN KEY (event_id) REFERENCES MULE_EVENTS (id) ON DELETE CASCADE
+);
+....
+
+==== Internal Handler Configuration
+
+First of all you have to download the Microsoft JDBC driver from https://www.microsoft.com/en-us/download/details.aspx?displaylang=en&id=11774.
+Download the sqljdbc_4_%version%_.tar.gz, uncompress it and copy the sqljdbc4_%version%_.jar to ${MULE_HOME}/plugins/mule-agent-plugin/lib/modules.
+
+[source,yaml]
+....
+---
+  mule.agent.tracking.handler.database:
+    driver: com.microsoft.sqlserver.jdbc.SQLServerDriver
+    jdbcUrl: jdbc:sqlserver://192.168.61.128:1433;databaseName=Mule;
+    user: root
+    pass: test
+....
+
+
+
