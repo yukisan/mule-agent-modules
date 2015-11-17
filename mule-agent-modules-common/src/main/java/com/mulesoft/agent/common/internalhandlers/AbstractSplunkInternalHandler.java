@@ -3,6 +3,7 @@ package com.mulesoft.agent.common.internalhandlers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mulesoft.agent.AgentEnableOperationException;
 import com.mulesoft.agent.buffer.BufferConfiguration;
+import com.mulesoft.agent.buffer.BufferExhaustedAction;
 import com.mulesoft.agent.buffer.BufferType;
 import com.mulesoft.agent.buffer.BufferedHandler;
 import com.mulesoft.agent.common.serializer.DefaultObjectMapperFactory;
@@ -293,9 +294,11 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
         {
             BufferConfiguration defaultBuffer = new BufferConfiguration();
             defaultBuffer.setType(BufferType.MEMORY);
-            defaultBuffer.setRetryCount(1);
+            defaultBuffer.setRetryCount(3);
             defaultBuffer.setFlushFrequency(10000l);
             defaultBuffer.setMaximumCapacity(5000);
+            defaultBuffer.setDiscardMessagesOnFlushFailure(false);
+            defaultBuffer.setWhenExhausted(BufferExhaustedAction.FLUSH);
             return defaultBuffer;
         }
     }
