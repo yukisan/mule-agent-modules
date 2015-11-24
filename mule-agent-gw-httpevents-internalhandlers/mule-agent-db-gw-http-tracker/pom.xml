@@ -19,6 +19,13 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.mulesoft.agent</groupId>
+            <artifactId>mule-agent-modules-common</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
             <groupId>com.fasterxml.uuid</groupId>
             <artifactId>java-uuid-generator</artifactId>
             <exclusions>
