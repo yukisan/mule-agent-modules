@@ -237,4 +237,10 @@
             <url>https://repository-master.mulesoft.org/nexus/content/repositories/ci-releases</url>
         </repository>
     </repositories>
+
+    <scm>
+        <url>https://github.com/mulesoft/mule-agent-modules</url>
+        <connection>scm:git:git://github.com/mulesoft/mule-agent-modules.git</connection>
+        <developerConnection>scm:git:git@github.com:mulesoft/mule-agent-modules.git</developerConnection>
+    </scm>
 </project>
