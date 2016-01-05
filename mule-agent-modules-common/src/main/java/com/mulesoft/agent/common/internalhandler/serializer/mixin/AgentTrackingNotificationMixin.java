@@ -1,7 +1,7 @@
-package com.mulesoft.agent.common.mixin;
+package com.mulesoft.agent.common.internalhandler.serializer.mixin;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.mulesoft.agent.common.serializer.TimestampToDateSerializer;
+import com.mulesoft.agent.common.internalhandler.serializer.TimestampToDateSerializer;
 
 public abstract class AgentTrackingNotificationMixin
 {

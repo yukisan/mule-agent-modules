@@ -1,6 +1,6 @@
 package com.mulesoft.agent.gw.http.log;
 
-import com.mulesoft.agent.common.internalhandlers.AbstractLogInternalHandler;
+import com.mulesoft.agent.common.internalhandler.AbstractLogInternalHandler;
 import com.mulesoft.agent.configuration.Configurable;
 import com.mulesoft.agent.configuration.Type;
 import com.mulesoft.module.client.model.HttpEvent;

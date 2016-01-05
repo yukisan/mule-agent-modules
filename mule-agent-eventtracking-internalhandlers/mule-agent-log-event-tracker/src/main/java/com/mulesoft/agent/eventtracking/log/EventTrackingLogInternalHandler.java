@@ -1,7 +1,7 @@
 package com.mulesoft.agent.eventtracking.log;
 
-import com.mulesoft.agent.common.internalhandlers.AbstractLogInternalHandler;
-import com.mulesoft.agent.common.mixin.AgentTrackingNotificationMixin;
+import com.mulesoft.agent.common.internalhandler.AbstractLogInternalHandler;
+import com.mulesoft.agent.common.internalhandler.serializer.mixin.AgentTrackingNotificationMixin;
 import com.mulesoft.agent.configuration.Configurable;
 import com.mulesoft.agent.configuration.Type;
 import com.mulesoft.agent.domain.tracking.AgentTrackingNotification;

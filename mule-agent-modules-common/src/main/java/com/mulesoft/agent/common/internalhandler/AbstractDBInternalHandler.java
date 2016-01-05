@@ -1,4 +1,4 @@
-package com.mulesoft.agent.common.internalhandlers;
+package com.mulesoft.agent.common.internalhandler;
 
 import com.mulesoft.agent.AgentEnableOperationException;
 import com.mulesoft.agent.buffer.BufferConfiguration;

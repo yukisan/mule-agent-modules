@@ -1,7 +1,7 @@
 package com.mulesoft.agent.eventtracking.splunk;
 
-import com.mulesoft.agent.common.internalhandlers.AbstractSplunkInternalHandler;
-import com.mulesoft.agent.common.mixin.AgentTrackingNotificationMixin;
+import com.mulesoft.agent.common.internalhandler.AbstractSplunkInternalHandler;
+import com.mulesoft.agent.common.internalhandler.serializer.mixin.AgentTrackingNotificationMixin;
 import com.mulesoft.agent.domain.tracking.AgentTrackingNotification;
 import com.mulesoft.agent.handlers.exception.InitializationException;
 
