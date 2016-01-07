@@ -13,6 +13,8 @@ import com.mulesoft.agent.common.internalhandler.splunk.transport.config.HECTran
 import com.mulesoft.agent.common.internalhandler.splunk.transport.config.RestTransportConfig;
 import com.mulesoft.agent.common.internalhandler.splunk.transport.config.TCPTransportConfig;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>
@@ -26,6 +28,8 @@ import org.apache.commons.lang.StringUtils;
  */
 public class DefaultTransportFactory<T> implements TransportFactory<T>
 {
+    private final static Logger LOGGER = LoggerFactory.getLogger(DefaultTransportFactory.class);
+
     private final AbstractSplunkInternalHandler<T> internalHandler;
 
     public DefaultTransportFactory(AbstractSplunkInternalHandler<T> internalHandler)
@@ -39,17 +43,20 @@ public class DefaultTransportFactory<T> implements TransportFactory<T>
         if (StringUtils.isNotBlank(this.internalHandler.token))
         {
             HECTransportConfig config = new HECTransportConfig.Builder(this.internalHandler).build();
+            LOGGER.debug("Creating the a HECTransport with the settings: " + config);
             return new HECTransport<T>(config, this.internalHandler.getObjectMapper());
         }
 
         if (this.internalHandler.scheme.equals("tcp"))
         {
             TCPTransportConfig config = new TCPTransportConfig.Builder(this.internalHandler).build();
+            LOGGER.debug("Creating the a TCPTransport with the settings: " + config);
             return new TCPTransport<T>(config, this.internalHandler.getObjectMapper());
         }
 
         // Default old behavior, REST
         RestTransportConfig config = new RestTransportConfig.Builder(this.internalHandler).build();
+        LOGGER.debug("Creating the a RestTransport with the settings: " + config);
         return new RestTransport<T>(config, this.internalHandler.getObjectMapper());
     }
 }

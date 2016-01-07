@@ -48,6 +48,14 @@ public class RestTransportConfig extends HttpBasedSplunkConfig
         this.pass = pass;
     }
 
+    @Override
+    public String toString()
+    {
+        return "RestTransportConfig{" +
+                "user='" + user + '\'' +
+                "} " + super.toString();
+    }
+
     public static class Builder
     {
         private RestTransportConfig config = new RestTransportConfig();

@@ -12,7 +12,6 @@ import com.mulesoft.agent.common.internalhandler.splunk.transport.config.HttpSch
 import com.mulesoft.agent.common.internalhandler.splunk.transport.config.RestTransportConfig;
 import com.mulesoft.agent.handlers.exception.InitializationException;
 import com.splunk.*;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,7 +55,7 @@ public class RestTransport<T> extends AbstractTransport<T>
     {
         try
         {
-            LOGGER.debug("Connecting to the Splunk server: %s:%s.", this.config.getHost(), this.config.getPort());
+            LOGGER.debug("Connecting to the Splunk server: {}:{}.", this.config.getHost(), this.config.getPort());
             ServiceArgs loginArgs = new ServiceArgs();
             loginArgs.setUsername(this.config.getUser());
             loginArgs.setPassword(this.config.getPass());
@@ -79,17 +78,17 @@ public class RestTransport<T> extends AbstractTransport<T>
 
         try
         {
-            LOGGER.debug("Retrieving the Splunk index: %s", this.config.getIndex());
+            LOGGER.debug("Retrieving the Splunk index: {}", this.config.getIndex());
             this.index = service.getIndexes().get(this.config.getIndex());
             if (index == null)
             {
-                LOGGER.warn("Creating the index: %s", this.config.getIndex());
+                LOGGER.warn("Creating the index: {}", this.config.getIndex());
                 this.index = service.getIndexes().create(this.config.getIndex());
                 if (this.index == null)
                 {
-                    throw new InitializationException(String.format("Couldn't create the Splunk index: %s", this.config.getIndex()));
+                    throw new InitializationException(String.format("Couldn't create the Splunk index: {}", this.config.getIndex()));
                 }
-                LOGGER.debug("Splunk index: %s, created successfully.", this.config.getIndex());
+                LOGGER.debug("Splunk index: {}, created successfully.", this.config.getIndex());
             }
         }
         catch (Exception e)
@@ -160,6 +159,8 @@ public class RestTransport<T> extends AbstractTransport<T>
     @Override
     public void dispose()
     {
-        service.logout();
+        if (service != null) {
+            service.logout();
+        }
     }
 }
