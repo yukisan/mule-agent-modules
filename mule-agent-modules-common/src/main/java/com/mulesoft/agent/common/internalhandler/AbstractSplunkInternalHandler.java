@@ -31,15 +31,6 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
 
     /**
      * <p>
-     * Flag to identify if the Internal Handler is enabled or not.
-     * Default: false
-     * </p>
-     */
-    @Configurable("false")
-    protected boolean enabled;
-
-    /**
-     * <p>
      * Username to connect to Splunk.
      * </p>
      */
@@ -165,14 +156,6 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
     public ObjectMapper getObjectMapper()
     {
         return this.objectMapper;
-    }
-
-    public void postConfigurable() throws AgentEnableOperationException
-    {
-        if (this.enabledSwitch == null)
-        {
-            this.enabledSwitch = OnOffSwitch.newNullSwitch(this.enabled);
-        }
     }
 
     @Override
