@@ -45,11 +45,12 @@ For the publisher to work the add-on must be installed and configured.
 ....
 ---
 mule.agent.nagios.jmx.internal.handler:
+  enabled: true
   host: com.mulesoft.agent
   nagiosServer: 54.166.172.53
   nagiosPort: 5667
   encryptionMethod: XOR
-  password myPassword
+  password: myPassword
 ....
 
 

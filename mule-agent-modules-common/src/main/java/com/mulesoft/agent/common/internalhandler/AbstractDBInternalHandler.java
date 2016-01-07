@@ -26,15 +26,6 @@ public abstract class AbstractDBInternalHandler<T> extends BufferedHandler<T>
 
     /**
      * <p>
-     * Flag to identify if the Internal Handler is enabled or not.
-     * Default: false
-     * </p>
-     */
-    @Configurable("false")
-    protected boolean enabled;
-
-    /**
-     * <p>
      * JDBC driver to use to communicate with the database server.
      * </p>
      */
@@ -123,14 +114,6 @@ public abstract class AbstractDBInternalHandler<T> extends BufferedHandler<T>
                     LOGGER.error("Error closing the database.", e);
                 }
             }
-        }
-    }
-
-    public void postConfigurable() throws AgentEnableOperationException
-    {
-        if (this.enabledSwitch == null)
-        {
-            this.enabledSwitch = OnOffSwitch.newNullSwitch(this.enabled);
         }
     }
 

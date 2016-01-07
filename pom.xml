@@ -244,6 +244,10 @@
             <name>ci releases</name>
             <url>https://repository-master.mulesoft.org/nexus/content/repositories/ci-releases</url>
         </repository>
+        <repository>
+            <id>pentaho-releases</id>
+            <url>http://repository.pentaho.org/artifactory/repo/</url>
+        </repository>
     </repositories>
 
     <scm>
