@@ -20,10 +20,4 @@
             </includes>
         </fileSet>
     </fileSets>
-    <files>
-        <file>
-            <source>${project.basedir}/lib/jsendnsca-2.0.1.jar</source>
-            <outputDirectory>/</outputDirectory>
-        </file>
-    </files>
 </assembly>
