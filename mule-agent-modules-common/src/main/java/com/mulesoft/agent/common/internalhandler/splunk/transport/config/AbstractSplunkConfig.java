@@ -40,4 +40,13 @@ public abstract class AbstractSplunkConfig
     {
         this.port = port;
     }
+
+    @Override
+    public String toString()
+    {
+        return "AbstractSplunkConfig{" +
+                "host='" + host + '\'' +
+                ", port=" + port +
+                '}';
+    }
 }

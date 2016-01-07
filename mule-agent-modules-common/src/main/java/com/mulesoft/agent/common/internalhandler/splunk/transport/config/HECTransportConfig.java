@@ -33,6 +33,14 @@ public class HECTransportConfig extends HttpBasedSplunkConfig
         this.token = token;
     }
 
+    @Override
+    public String toString()
+    {
+        return "HECTransportConfig{" +
+                "token='" + token + '\'' +
+                "} " + super.toString();
+    }
+
     public static class Builder
     {
         private HECTransportConfig config = new HECTransportConfig();
