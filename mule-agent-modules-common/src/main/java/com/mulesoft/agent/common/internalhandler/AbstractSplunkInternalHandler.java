@@ -178,10 +178,11 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
     @Override
     public void initialize() throws InitializationException
     {
-        LOGGER.debug("Configuring the Common Splunk Internal Handler...");
+        LOGGER.debug("Configuring the Splunk Internal Handler with values: " + this.toString());
 
         if (this.transport != null)
         {
+            LOGGER.debug("Disposing the previous Splunk transport");
             this.transport.dispose();
         }
 
@@ -192,7 +193,9 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
 
         try
         {
+            LOGGER.debug("Creating a new Splunk transport");
             this.transport = this.transportFactory.create();
+            LOGGER.debug("Initializing the Splunk transport: " + this.transport);
             this.transport.init();
         }
         catch (AgentConfigurationException e)
@@ -222,5 +225,22 @@ public abstract class AbstractSplunkInternalHandler<T> extends BufferedHandler<T
             defaultBuffer.setWhenExhausted(BufferExhaustedAction.FLUSH);
             return defaultBuffer;
         }
+    }
+
+    @Override
+    public String toString()
+    {
+        return "AbstractSplunkInternalHandler{" +
+                "user='" + user + '\'' +
+                ", host='" + host + '\'' +
+                ", token='" + token + '\'' +
+                ", port=" + port +
+                ", scheme='" + scheme + '\'' +
+                ", sslSecurityProtocol='" + sslSecurityProtocol + '\'' +
+                ", splunkIndexName='" + splunkIndexName + '\'' +
+                ", splunkSource='" + splunkSource + '\'' +
+                ", splunkSourceType='" + splunkSourceType + '\'' +
+                ", dateFormatPattern='" + dateFormatPattern + '\'' +
+                '}';
     }
 }

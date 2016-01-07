@@ -17,6 +17,13 @@ import org.apache.commons.lang.StringUtils;
  */
 public class TCPTransportConfig extends AbstractSplunkConfig
 {
+
+    @Override
+    public String toString()
+    {
+        return "TCPTransportConfig{} " + super.toString();
+    }
+
     public static class Builder
     {
         private TCPTransportConfig config = new TCPTransportConfig();

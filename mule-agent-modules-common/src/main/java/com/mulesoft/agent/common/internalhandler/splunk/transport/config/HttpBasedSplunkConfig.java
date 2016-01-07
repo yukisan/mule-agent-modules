@@ -77,4 +77,16 @@ public abstract class HttpBasedSplunkConfig extends AbstractSplunkConfig
     {
         this.sourceType = sourceType;
     }
+
+    @Override
+    public String toString()
+    {
+        return "HttpBasedSplunkConfig{" +
+                "scheme=" + scheme +
+                ", sslSecurityProtocol=" + sslSecurityProtocol +
+                ", index='" + index + '\'' +
+                ", source='" + source + '\'' +
+                ", sourceType='" + sourceType + '\'' +
+                "} " + super.toString();
+    }
 }
