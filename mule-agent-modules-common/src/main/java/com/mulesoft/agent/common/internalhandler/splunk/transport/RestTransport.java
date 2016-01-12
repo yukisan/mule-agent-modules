@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * <p>
@@ -31,6 +32,7 @@ import java.util.Collection;
 public class RestTransport<T> extends AbstractTransport<T>
 {
     private final static Logger LOGGER = LoggerFactory.getLogger(RestTransport.class);
+    private static final long SLEEP_INDEX_CREATION = 1000 * 3; // 5 secs
 
     /**
      * http://dev.splunk.com/view/java-sdk/SP-CAAAECX
@@ -48,6 +50,23 @@ public class RestTransport<T> extends AbstractTransport<T>
     {
         super(objectMapper);
         this.config = config;
+    }
+
+    private Index getSplunkIndex()
+    {
+        IndexCollection indexes = service.getIndexes();
+        Iterator<String> keyIterator = indexes.keySet().iterator();
+
+        while (keyIterator.hasNext())
+        {
+            Index index = indexes.get(keyIterator.next());
+            if (index.getName().equalsIgnoreCase(this.config.getIndex()))
+            {
+                return index;
+            }
+        }
+
+        return null;
     }
 
     @Override
@@ -79,14 +98,29 @@ public class RestTransport<T> extends AbstractTransport<T>
         try
         {
             LOGGER.debug("Retrieving the Splunk index: {}", this.config.getIndex());
-            this.index = service.getIndexes().get(this.config.getIndex());
-            if (index == null)
+            this.index = getSplunkIndex();
+
+            if (this.index == null)
             {
                 LOGGER.warn("Creating the index: {}", this.config.getIndex());
-                this.index = service.getIndexes().create(this.config.getIndex());
+                Exception indexCreationException = null;
+                try
+                {
+                    this.index = service.getIndexes().create(this.config.getIndex());
+                }
+                catch (Exception ex)
+                {
+                    indexCreationException = ex;
+                    LOGGER.debug("There was an error creating the index.", ex);
+                    // When configuring ServerGroups could cause that multiple times the index is being created
+                    // so after a delay we check again for the index
+                    Thread.sleep(SLEEP_INDEX_CREATION);
+                    this.index = getSplunkIndex();
+                }
+
                 if (this.index == null)
                 {
-                    throw new InitializationException(String.format("Couldn't create the Splunk index: {}", this.config.getIndex()));
+                    throw new InitializationException(String.format("Couldn't create the Splunk index: {}", this.config.getIndex()), indexCreationException);
                 }
                 LOGGER.debug("Splunk index: {}, created successfully.", this.config.getIndex());
             }
