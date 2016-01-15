@@ -134,6 +134,11 @@ public class RestTransport<T> extends AbstractTransport<T>
     @Override
     public boolean send(final Collection<T> messages)
     {
+        if (this.service == null || this.index == null)
+        {
+            LOGGER.debug("The Splunk service isn't initializated correctly.");
+            return false;
+        }
         try
         {
             // Check if the authentication token, isn't expired
