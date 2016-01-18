@@ -1,6 +1,5 @@
 package com.mulesoft.agent.common.internalhandler;
 
-import com.mulesoft.agent.AgentEnableOperationException;
 import com.mulesoft.agent.buffer.BufferConfiguration;
 import com.mulesoft.agent.buffer.BufferExhaustedAction;
 import com.mulesoft.agent.buffer.BufferType;
@@ -9,11 +8,9 @@ import com.mulesoft.agent.configuration.Configurable;
 import com.mulesoft.agent.configuration.Password;
 import com.mulesoft.agent.configuration.Type;
 import com.mulesoft.agent.handlers.exception.InitializationException;
-import com.mulesoft.agent.services.OnOffSwitch;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.management.AgentConfigurationError;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -125,7 +122,7 @@ public abstract class AbstractDBInternalHandler<T> extends BufferedHandler<T>
         if (StringUtils.isEmpty(this.driver)
                 || StringUtils.isEmpty(this.jdbcUrl))
         {
-            throw new AgentConfigurationError("Please review configuration; " +
+            throw new InitializationException("Please review configuration; " +
                     "you must configure the following properties: driver and jdbcUrl.");
         }
 
