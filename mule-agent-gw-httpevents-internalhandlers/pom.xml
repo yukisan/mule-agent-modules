@@ -22,7 +22,6 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <gw.version>2.2.0-SNAPSHOT</gw.version>
     </properties>
 
     <dependencies>

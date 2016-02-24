@@ -47,6 +47,7 @@
         <slfj4.version>1.6.1</slfj4.version>
         <jackson.version>2.3.2</jackson.version>
         <async.http.client.version>1.8.14</async.http.client.version>
+        <gw.version>2.2.0</gw.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
