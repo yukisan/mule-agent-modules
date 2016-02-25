@@ -59,6 +59,7 @@ Download the .zip file and extract to obtain the mysql-connector-java-%VERSION%-
 ....
 ---
   mule.agent.gw.http.handler.database:
+    enabled: true
     driver: com.mysql.jdbc.Driver
     jdbcUrl: jdbc:mysql://192.168.61.128/mule
     user: root
@@ -81,6 +82,7 @@ Download the .jar file and copy it to ${MULE_HOME}/plugins/mule-agent-plugin/lib
 ....
 ---
   mule.agent.gw.http.handler.database:
+    enabled: true
     driver: oracle.jdbc.OracleDriver
     jdbcUrl: jdbc:oracle:thin:@192.168.61.128/XE
     user: root
@@ -101,7 +103,8 @@ Download the sqljdbc_4_%version%_.tar.gz, uncompress it and copy the sqljdbc4_%v
 [source,yaml]
 ....
 ---
-  mule.agent.tracking.handler.database:
+  mule.agent.gw.http.handler.database:
+    enabled: true
     driver: com.microsoft.sqlserver.jdbc.SQLServerDriver
     jdbcUrl: jdbc:sqlserver://192.168.61.128:1433;databaseName=Mule;
     user: root
