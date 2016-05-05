@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.mulesoft.agent</groupId>
         <artifactId>mule-agent-modules</artifactId>
-        <version>1.4.0</version>
+        <version>1.4.0-HF1</version>
     </parent>
 
     <packaging>pom</packaging>
@@ -91,5 +91,5 @@
             <artifactId>validation-api</artifactId>
         </dependency>
     </dependencies>
-    
+
 </project>
