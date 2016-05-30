@@ -8,6 +8,13 @@
 
 package com.mulesoft.agent.monitoring.publisher;
 
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
+
 import com.google.common.collect.Lists;
 import com.mulesoft.agent.AgentEnableOperationException;
 import com.mulesoft.agent.buffer.BufferConfiguration;
@@ -15,27 +22,20 @@ import com.mulesoft.agent.buffer.BufferType;
 import com.mulesoft.agent.buffer.BufferedHandler;
 import com.mulesoft.agent.configuration.Configurable;
 import com.mulesoft.agent.configuration.PostConfigure;
+import com.mulesoft.agent.configuration.common.SecurityConfiguration;
 import com.mulesoft.agent.domain.monitoring.Metric;
 import com.mulesoft.agent.monitoring.publisher.ingest.AnypointMonitoringIngestAPIClient;
 import com.mulesoft.agent.monitoring.publisher.ingest.AuthProxyClient;
-import com.mulesoft.agent.monitoring.publisher.ingest.builder.IngestApplicationMetricPostBodyBuilder;
 import com.mulesoft.agent.monitoring.publisher.ingest.builder.IngestMetricBuilder;
 import com.mulesoft.agent.monitoring.publisher.ingest.builder.IngestTargetMetricPostBodyBuilder;
-import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestApplicationMetricPostBody;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestMetric;
 import com.mulesoft.agent.monitoring.publisher.ingest.model.IngestTargetMetricPostBody;
 import com.mulesoft.agent.monitoring.publisher.model.MetricClassification;
 import com.mulesoft.agent.monitoring.publisher.model.MetricSample;
 import com.mulesoft.agent.services.OnOffSwitch;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
 
 /**
  * <p>
@@ -46,22 +46,21 @@ import java.util.List;
 @Named("mule.agent.ingest.metrics.internal.handler")
 public class IngestMonitorPublisher extends BufferedHandler<List<Metric>>
 {
-
     private final static Logger LOGGER = LoggerFactory.getLogger(IngestMonitorPublisher.class);
     private static final String CPU_METRIC_NAME = "java.lang:type=OperatingSystem:CPU";
     private static final String MEMORY_USAGE_METRIC_NAME = "java.lang:type=Memory:heap used";
     private static final String MEMORY_TOTAL_METRIC_NAME = "java.lang:type=Memory:heap total";
     private static final List<String> keys = Lists.newArrayList(CPU_METRIC_NAME, MEMORY_TOTAL_METRIC_NAME, MEMORY_USAGE_METRIC_NAME);
 
+    @Configurable("{}")
+    private SecurityConfiguration securityConfiguration;
+
     @Configurable("http://localhost:8088")
     private String authProxyEndpoint;
-    @Configurable
-    private String keyStorePassword;
-    @Configurable
-    private String certificatePassword;
 
     @Configurable("1")
     private String apiVersion;
+
     @Configurable("true")
     private Boolean enabled;
 
@@ -93,7 +92,7 @@ public class IngestMonitorPublisher extends BufferedHandler<List<Metric>>
                 this.buffer.setMaximumCapacity(100);
             }
         }
-        AuthProxyClient authProxyClient = AuthProxyClient.create(authProxyEndpoint, keyStorePassword, certificatePassword);
+        AuthProxyClient authProxyClient = AuthProxyClient.create(authProxyEndpoint, securityConfiguration);
         this.client = AnypointMonitoringIngestAPIClient.create(apiVersion, authProxyClient);
     }
 

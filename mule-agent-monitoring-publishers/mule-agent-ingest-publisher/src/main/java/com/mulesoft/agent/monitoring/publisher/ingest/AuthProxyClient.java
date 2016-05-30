@@ -1,31 +1,29 @@
 package com.mulesoft.agent.monitoring.publisher.ingest;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.net.ssl.*;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.URL;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManagerFactory;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
-/**
- * Created by sebastianvinci on 5/26/16.
- */
+import com.mulesoft.agent.configuration.common.SecurityConfiguration;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class AuthProxyClient
 {
-
     private static final Logger LOGGER = LoggerFactory.getLogger(AnypointMonitoringIngestAPIClient.class);
 
     private final String baseUrl;
@@ -37,18 +35,17 @@ public class AuthProxyClient
         this.client = client;
     }
 
-    public static AuthProxyClient create(String baseUrl, String keyStorePassword, String certificatePassword)
+    public static AuthProxyClient create(String baseUrl, SecurityConfiguration securityConfiguration)
     {
         try
         {
-
             SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
 
-            KeyStore keyStore = getKeyStore("mule-agent.jks", keyStorePassword.toCharArray());
+            KeyStore keyStore = getKeyStore(securityConfiguration.getKeyStoreFile(), securityConfiguration.getKeyStorePassword().toCharArray());
             KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-            keyManagerFactory.init(keyStore, certificatePassword.toCharArray());
+            keyManagerFactory.init(keyStore, securityConfiguration.getKeyStoreAliasPassword().toCharArray());
 
-            KeyStore trustStore = getKeyStore("truststore.jks", null);
+            KeyStore trustStore = getKeyStore(securityConfiguration.getTrustStoreFile(), null);
             TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
             trustManagerFactory.init(trustStore);
 
@@ -61,22 +58,12 @@ public class AuthProxyClient
         }
     }
 
-    private static KeyStore getKeyStore(String keyStoreFileName, char[] password) throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException
+    private static KeyStore getKeyStore(String keyStoreFilePath, char[] password) throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException
     {
-        File keyStoreFile = new File(getConfigFilePath(keyStoreFileName));
+        File keyStoreFile = new File(keyStoreFilePath);
         KeyStore keyStore = KeyStore.getInstance("JKS");
         keyStore.load(new FileInputStream(keyStoreFile), password);
         return keyStore;
-    }
-
-    private static String getConfigFilePath(String configFileName)
-    {
-        String configurationFolder = System.getProperty("mule.agent.configuration.folder");
-        if (configurationFolder == null)
-        {
-            throw new RuntimeException("Configuration folder was not set.");
-        }
-        return configurationFolder + File.separator +  configFileName;
     }
 
     public <T> void post(String path, Entity<T> json)
