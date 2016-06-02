@@ -20,49 +20,24 @@ public class AnypointMonitoringIngestAPIClient
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AnypointMonitoringIngestAPIClient.class);
 
-    private final String baseUrl;
-    private final Client client;
+    private final String targetMetricsPath;
 
-    private AnypointMonitoringIngestAPIClient(String baseUrl)
+    private final AuthProxyClient authProxyClient;
+
+    private AnypointMonitoringIngestAPIClient(String apiVersion, AuthProxyClient authProxyClient)
     {
-        this.baseUrl = baseUrl;
-        this.client = ClientBuilder.newClient();
+        this.targetMetricsPath = String.format("/monitoring/ingest/api/v%s/targets", apiVersion);
+        this.authProxyClient = authProxyClient;
     }
 
-    private AnypointMonitoringIngestAPIClient(String endpoint, String apiVersion, String organizationId, String environmentId)
+    public static AnypointMonitoringIngestAPIClient create(String apiVersion, AuthProxyClient authProxyClient)
     {
-        this(String.format("%s/monitoring/ingest/api/v%s/organizations/%s/environments/%s", endpoint, apiVersion, organizationId, environmentId));
+        return new AnypointMonitoringIngestAPIClient(apiVersion, authProxyClient);
     }
 
-    public static AnypointMonitoringIngestAPIClient create(String endpoint, String apiVersion, String organizationId, String environmentId)
-    {
-        return new AnypointMonitoringIngestAPIClient(endpoint, apiVersion, organizationId, environmentId);
-    }
-
-    private <T> void doPost(final String url, final Entity<T> json) {
-        final Response response = this.client
-                .target(url)
-                .request(MediaType.APPLICATION_JSON_TYPE)
-                .post(json);
-        if (response.getStatusInfo().getFamily() != Response.Status.Family.SUCCESSFUL)
-        {
-            Response.StatusType statusInfo = response.getStatusInfo();
-            throw new RuntimeException("(" + statusInfo.getFamily()+ ") " + statusInfo.getStatusCode() + " " + statusInfo.getReasonPhrase());
-        }
-    }
-
-    public void postTargetMetrics(final String id, final IngestTargetMetricPostBody body) {
-        final String url = this.baseUrl + "/targets/" + id;
-        LOGGER.info(String.format("Sending %s to %s...", body.toString(), url));
-        Entity<IngestTargetMetricPostBody> json = Entity.json(body);
-        this.doPost(url, json);
-    }
-
-    public void postApplicationMetrics(final String id, final IngestApplicationMetricPostBody body) {
-        final String url = this.baseUrl + "/applications/" + id;
-        Entity<IngestApplicationMetricPostBody> json = Entity.json(body);
-        LOGGER.info(String.format("Sending %s to %s...", body.toString(), url));
-        this.doPost(url, json);
+    public void postTargetMetrics(final IngestTargetMetricPostBody body) {
+        LOGGER.info(String.format("Sending %s to %s...", body.toString(), this.targetMetricsPath));
+        this.authProxyClient.post(this.targetMetricsPath, Entity.json(body));
     }
 
 }
