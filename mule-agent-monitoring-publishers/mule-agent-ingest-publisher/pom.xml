@@ -35,6 +35,14 @@
           <groupId>junit</groupId>
           <artifactId>junit</artifactId>
       </dependency>
+      <dependency>
+          <groupId>com.mulesoft.agent</groupId>
+          <artifactId>mule-agent-internal-handlers</artifactId>
+      </dependency>
+      <dependency>
+          <groupId>com.mulesoft.agent</groupId>
+          <artifactId>mule-agent-api</artifactId>
+      </dependency>
   </dependencies>
 
   <build>
